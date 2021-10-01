@@ -17,6 +17,7 @@ public class Graph<Vertex> {
         if (!map.containsKey(destination)){
             addNewVertex(destination);
         }
+        map.get(source).add(destination);
         if (bidirectional == true){
             map.get(destination).add(source);
         }
@@ -35,6 +36,7 @@ public class Graph<Vertex> {
             count = count / 2;
         }
         System.out.println("Total number of edges: " + count);
+
     }
 
     //checks if a graph has a vertex
@@ -46,25 +48,29 @@ public class Graph<Vertex> {
             System.out.println("The graph does not contain " + label + " as a vertex");
         }
     }
+
+    public void containsEdge(Vertex source, Vertex destination){
+        if (map.get(source).contains(destination)){
+            System.out.println("The Graph has an edge between " +source+ " and " +destination);
+        }
+        else{
+            System.out.println("The graph has no edge between " +source+ " and " +destination);
+        }
+    }
+
+    public static void main(String[] args){
+        Graph g1 = new Graph();
+        g1.addNewVertex("London");
+        g1.addNewVertex("Ontario");
+        g1.addNewEdge("Ontario", "London", true);
+        g1.countVertices();
+        g1.countEdges(false);
+        //g1.containsVertex("Kingston");
+        g1.containsEdge("Ontario", "London");
+        System.out.println(g1.map.values());
+        g1.addNewEdge("Ontario", "Kingston", true);
+        System.out.println(g1.map.values());
+    }
+
 }
 
-class Vertex{
-    String label;
-
-    Vertex(String label){
-        this.label = label;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Vertex vertex = (Vertex) o;
-        return Objects.equals(label, vertex.label);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(label);
-    }
-}
