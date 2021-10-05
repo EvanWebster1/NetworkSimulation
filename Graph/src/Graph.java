@@ -1,46 +1,54 @@
+import java.awt.*;
+import java.beans.VetoableChangeListener;
+import java.sql.Time;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.*;
 
-public class Graph<Vertex> {
-    private Map<Vertex, List<Vertex>> map = new HashMap<>();
+public class Graph<T extends Vertex>{
+    private Map<T, List<T>> map = new HashMap<>();
 
-    public void addNewVertex(Vertex label){
-        map.put(label, new LinkedList<Vertex>());
+    public void addNewVertex(T src){
+        map.putIfAbsent(src, new LinkedList<T>());
     }
 
-    public void addNewEdge(Vertex source, Vertex destination, boolean bidirectional){
-        if (!map.containsKey(source)){
+    // Creates Vertex for src given to be removed from the map and all Vertex's connected
+    public void removeVertex (String Src){
+        Vertex src = new Vertex(Src);
+        map.values().stream().forEach(e -> e.remove(src));
+        map.remove(new Vertex(Src));
+    }
+
+    public void addNewEdge(T source, T destination){
+        if(!map.containsKey(source)){
             addNewVertex(source);
         }
         if (!map.containsKey(destination)){
             addNewVertex(destination);
         }
         map.get(source).add(destination);
-        if (bidirectional == true){
-            map.get(destination).add(source);
-        }
+        map.get(destination).add(source);
+
     }
 
     public void countVertices(){
         System.out.println("Total number of vertices: " +map.keySet().size());
     }
 
-    public void countEdges(boolean bidirection){
+    public void countEdges(){
         int count = 0;
         for (Vertex Vertex : map.keySet()){
             count = count + map.get(Vertex).size();
         }
-        if (bidirection == true){
-            count = count / 2;
-        }
+
         System.out.println("Total number of edges: " + count);
 
     }
 
     //checks if a graph has a vertex
-    public void containsVertex(Vertex label){
+    public void containsVertex(T label){
         if (map.containsKey(label)){
             System.out.println("The graph contains " + label + " as a vertex");
         }
@@ -49,8 +57,10 @@ public class Graph<Vertex> {
         }
     }
 
-    public void containsEdge(Vertex source, Vertex destination){
-        if (map.get(source).contains(destination)){
+    public void containsEdge(String source, String destination){
+        Vertex src = new Vertex(source);
+        Vertex dest = new Vertex(destination);
+        if (map.get(src).contains(dest)){
             System.out.println("The Graph has an edge between " +source+ " and " +destination);
         }
         else{
@@ -60,17 +70,39 @@ public class Graph<Vertex> {
 
     public static void main(String[] args){
         Graph g1 = new Graph();
-        g1.addNewVertex("London");
-        g1.addNewVertex("Ontario");
-        g1.addNewEdge("Ontario", "London", true);
+        g1.addNewVertex(new Vertex("London"));
+        g1.addNewVertex(new Vertex("Ontario"));
+        g1.countVertices();
+
+        /*
+        g1.addNewEdge("Ontario", "London");
         g1.countVertices();
         g1.countEdges(false);
         //g1.containsVertex("Kingston");
         g1.containsEdge("Ontario", "London");
         System.out.println(g1.map.values());
-        g1.addNewEdge("Ontario", "Kingston", true);
+        g1.addNewEdge("Ontario", "Kingston");
         System.out.println(g1.map.values());
+        g1.addNewEdge("London", "Kingston");
+        System.out.println(g1.map.values());
+        g1.addNewVertex("Tokyo");
+        System.out.println(g1.map.values());
+         */
     }
 
 }
 
+class Vertex {
+    private String src;
+    private Vertex[] dest;
+    private Point Location;
+    private Date date;
+    private Time time;
+    private String virus;
+    private Boolean firewall;
+
+    Vertex(String label){
+        this.src = label;
+    }
+
+}
