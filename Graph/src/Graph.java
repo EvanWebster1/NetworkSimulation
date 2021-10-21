@@ -1,108 +1,72 @@
 import java.awt.*;
-import java.beans.VetoableChangeListener;
+import java.io.File;
 import java.sql.Time;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.*;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
 
-public class Graph<T extends Vertex>{
-    private Map<T, List<T>> map = new HashMap<>();
+public class Graph{
+    private Map<String, ArrayList<Vertex>> map;
 
-    public void addNewVertex(T src){
-        map.putIfAbsent(src, new LinkedList<T>());
+    public Graph() {
+        map = new HashMap<String, ArrayList<Vertex>>();
     }
 
-    // Creates Vertex for src given to be removed from the map and all Vertex's connected
+    public Map<String, ArrayList<Vertex>> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, ArrayList<Vertex>> map) {
+        this.map = map;
+    }
+
+    public void addNewVertex(Vertex src){
+        map.putIfAbsent(src.getSrc(), new ArrayList<Vertex>());
+        map.get(src.getSrc()).add(src);
+    }
+
     public void removeVertex (String Src){
-        Vertex src = new Vertex(Src);
-        map.values().stream().forEach(e -> e.remove(src));
+        Vertex v = new Vertex(Src);
+        map.values().stream().forEach(e -> e.remove(v));
         map.remove(new Vertex(Src));
     }
 
-    public void addNewEdge(T source, T destination){
-        if(!map.containsKey(source)){
-            addNewVertex(source);
-        }
-        if (!map.containsKey(destination)){
-            addNewVertex(destination);
-        }
-        map.get(source).add(destination);
-        map.get(destination).add(source);
-
+    void addEdge(String src, String dest){
+        Vertex v1 = new Vertex(src);
+        Vertex v2 = new Vertex(dest);
+        map.get(v1).add(v2);
+        map.get(v2).add(v1);
     }
 
-    public void countVertices(){
-        System.out.println("Total number of vertices: " +map.keySet().size());
-    }
-
-    public void countEdges(){
-        int count = 0;
-        for (Vertex Vertex : map.keySet()){
-            count = count + map.get(Vertex).size();
+    void removeEdge(String src, String dest){
+        Vertex v1 = new Vertex(src);
+        Vertex v2 = new Vertex(dest);
+        List<Vertex> ev1 = map.get(v1);
+        List<Vertex> ev2 = map.get(v2);
+        if (ev1 != null){
+            ev1.remove(v2);
         }
-
-        System.out.println("Total number of edges: " + count);
-
-    }
-
-    //checks if a graph has a vertex
-    public void containsVertex(T label){
-        if (map.containsKey(label)){
-            System.out.println("The graph contains " + label + " as a vertex");
-        }
-        else {
-            System.out.println("The graph does not contain " + label + " as a vertex");
+        if (ev2 != null){
+            ev2.remove(v1);
         }
     }
 
-    public void containsEdge(String source, String destination){
-        Vertex src = new Vertex(source);
-        Vertex dest = new Vertex(destination);
-        if (map.get(src).contains(dest)){
-            System.out.println("The Graph has an edge between " +source+ " and " +destination);
-        }
-        else{
-            System.out.println("The graph has no edge between " +source+ " and " +destination);
-        }
-    }
-
-    public static void main(String[] args){
+    Graph createGraph()throws FileNotFoundException{
         Graph g1 = new Graph();
-        g1.addNewVertex(new Vertex("London"));
-        g1.addNewVertex(new Vertex("Ontario"));
-        g1.countVertices();
+        File myInput = new File("graph.txt");
+        Scanner s = new Scanner(myInput);
+        int i = 0;
+        while (s.hasNext()){
+            String line = s.nextLine();
+            String[] tokens = line.split(",");
 
-        /*
-        g1.addNewEdge("Ontario", "London");
-        g1.countVertices();
-        g1.countEdges(false);
-        //g1.containsVertex("Kingston");
-        g1.containsEdge("Ontario", "London");
-        System.out.println(g1.map.values());
-        g1.addNewEdge("Ontario", "Kingston");
-        System.out.println(g1.map.values());
-        g1.addNewEdge("London", "Kingston");
-        System.out.println(g1.map.values());
-        g1.addNewVertex("Tokyo");
-        System.out.println(g1.map.values());
-         */
-    }
-
-}
-
-class Vertex {
-    private String src;
-    private Vertex[] dest;
-    private Point Location;
-    private Date date;
-    private Time time;
-    private String virus;
-    private Boolean firewall;
-
-    Vertex(String label){
-        this.src = label;
+            g1.addNewVertex(new Vertex(tokens[0]));
+            i++;
+        }
+        return g1;
     }
 
 }
