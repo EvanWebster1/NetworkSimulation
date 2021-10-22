@@ -3,7 +3,6 @@ import java.io.File;
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.*;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
@@ -29,14 +28,27 @@ public class Graph{
     //adds a new kay pair to the map, only if the src key doesn't
     //already appear in the maps keys
     public void addNewVertex(Vertex src){
+
         map.putIfAbsent(src.getSrc(), new ArrayList<Vertex>());
     }
 
     //Removes a String src from the keys of the map
-    public void removeVertex (String Src){
-        Vertex v = new Vertex(Src);
-        map.values().stream().forEach(e -> e.remove(v));
-        map.remove(new Vertex(Src));
+    //removes all connections to the node being removed
+    public void removeVertex (String src){
+        //Vertex src = new Vertex(Src);
+        //map.get(Src).forEach(e ->e.remove(Src));
+        //int i = 0;
+
+        for (int i = 0; i < map.get(src).size(); i++){
+            Vertex v = new Vertex(map.get(src).get(i).getSrc());
+            for (int j = 0; j < map.get(v.getSrc()).size(); j++){
+                if (map.get(v.getSrc()).get(j).getSrc().equals(src)){
+                    map.get(v.getSrc()).remove(j);
+                }
+            }
+        }
+        map.remove(src);
+
     }
 
     //Adds the param src and dest (both strings) to the map value
@@ -54,8 +66,11 @@ public class Graph{
     public void removeEdge(String src, String dest){
         Vertex v1 = new Vertex(src);
         Vertex v2 = new Vertex(dest);
-        List<Vertex> ev1 = map.get(v1);
-        List<Vertex> ev2 = map.get(v2);
+        List<Vertex> ev1 = map.get(v1.getSrc());
+        List<Vertex> ev2 = map.get(v2.getSrc());
+
+        map.get(v1.getSrc()).remove(v2);
+
         if (ev1 != null){
             ev1.remove(v2);
         }
@@ -66,6 +81,9 @@ public class Graph{
 
     //Method for creating the graph by taking parsing through the graph.txt file
     //and taking the relevant information and sorting it into its correct location
+    //lines currently split by "," for new cities from their point locations
+    //and seperated by "---" to show where adding connections starts
+    //returns a graph object
     public Graph createGraph()throws FileNotFoundException{
         Graph g1 = new Graph();
         File myInput = new File("graph.txt");
@@ -92,9 +110,11 @@ public class Graph{
         return g1;
     }
 
+    //Outputs the nodes currently connected to the input string
+    //if the string passed in doesn't exist in the map, tells the user and returns
     public void listConnected(String src){
         if (!map.containsKey(src)){
-            System.out.println("This City isn't on the map ");
+            System.out.println("The City " +src+ " isn't on the map ");
             return;
         }
 
