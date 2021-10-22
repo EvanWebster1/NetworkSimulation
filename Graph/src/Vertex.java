@@ -15,7 +15,13 @@ public class Vertex {
         this.src = label;
     }
 
+    public void setLocation(Point p){
+        this.Location = p;
+    }
+
     public String getSrc(){
         return this.src;
     }
+
+    public Point getLocation(){return this.Location;}
 }
