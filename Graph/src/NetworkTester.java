@@ -5,5 +5,8 @@ public class NetworkTester {
         Graph graph = new Graph();
         graph = graph.createGraph();
         System.out.println(graph.getMap().keySet());
+        //graph.addEdge("London", "Montreal");
+        //graph.addEdge("London", "Miami");
+        graph.listConnected("Montreal");
     }
 }

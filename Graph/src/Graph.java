@@ -25,7 +25,7 @@ public class Graph{
 
     public void addNewVertex(Vertex src){
         map.putIfAbsent(src.getSrc(), new ArrayList<Vertex>());
-        map.get(src.getSrc()).add(src);
+        // map.get(src.getSrc()).add(src);
     }
 
     public void removeVertex (String Src){
@@ -34,14 +34,15 @@ public class Graph{
         map.remove(new Vertex(Src));
     }
 
-    void addEdge(String src, String dest){
+    public void addEdge(String src, String dest){
         Vertex v1 = new Vertex(src);
         Vertex v2 = new Vertex(dest);
-        map.get(v1).add(v2);
-        map.get(v2).add(v1);
+        map.get(v1.getSrc()).add(v2);
+        map.get(v2.getSrc()).add(v1);
+
     }
 
-    void removeEdge(String src, String dest){
+    public void removeEdge(String src, String dest){
         Vertex v1 = new Vertex(src);
         Vertex v2 = new Vertex(dest);
         List<Vertex> ev1 = map.get(v1);
@@ -54,19 +55,38 @@ public class Graph{
         }
     }
 
-    Graph createGraph()throws FileNotFoundException{
+    public Graph createGraph()throws FileNotFoundException{
         Graph g1 = new Graph();
         File myInput = new File("graph.txt");
         Scanner s = new Scanner(myInput);
-        int i = 0;
-        while (s.hasNext()){
-            String line = s.nextLine();
+        String line = s.nextLine();
+
+        while (!line.equals("---")){
             String[] tokens = line.split(",");
 
             g1.addNewVertex(new Vertex(tokens[0]));
-            i++;
+            line = s.nextLine();
         }
+
+        line = s.nextLine();
+
+        while (s.hasNext()){
+            String[] tokens = line.split(", ");
+
+            g1.addEdge(tokens[0], tokens[1]);
+            line = s.nextLine();
+        }
+
+
         return g1;
+    }
+
+    public void listConnected(String src){
+        System.out.println("Location: " + src+ " is connected to: ");
+
+        for (Vertex v : map.get(src)){
+            System.out.println(v.getSrc());
+        }
     }
 
 }
