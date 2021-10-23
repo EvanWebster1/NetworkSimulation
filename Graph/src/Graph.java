@@ -66,17 +66,17 @@ public class Graph{
     public void removeEdge(String src, String dest){
         Vertex v1 = new Vertex(src);
         Vertex v2 = new Vertex(dest);
-        List<Vertex> ev1 = map.get(v1.getSrc());
-        List<Vertex> ev2 = map.get(v2.getSrc());
-
-        map.get(v1.getSrc()).remove(v2);
-
-        if (ev1 != null){
-            ev1.remove(v2);
+        for (int i = 0; i < map.get(v1.getSrc()).size(); i++) {
+            if (map.get(v1.getSrc()).get(i).getSrc().equals(dest)) {
+                map.get(src).remove(i);
+            }
         }
-        if (ev2 != null){
-            ev2.remove(v1);
+        for (int i = 0; i < map.get(v2.getSrc()).size(); i++) {
+            if (map.get(v2.getSrc()).get(i).getSrc().equals(src)) {
+                map.get(dest).remove(i);
+            }
         }
+
     }
 
     //Method for creating the graph by taking parsing through the graph.txt file
@@ -121,6 +121,23 @@ public class Graph{
         System.out.println("Location: " + src+ " is connected to: ");
         for (Vertex v : map.get(src)){
             System.out.println(v.getSrc());
+        }
+    }
+
+    //Method for printing the current keys and values of the graph
+    public void printGraph(){
+        System.out.println("\n Printing contents of the graph \n");
+        if (map.isEmpty()){
+            System.out.println("Current Graph is empty");
+            return;
+        }
+        for (Map.Entry<String, ArrayList<Vertex>> entry : map.entrySet()){
+            String k = entry.getKey();
+            System.out.print("Key: " +k+ " is Connected to: ");
+            for (Vertex v : map.get(k)){
+                System.out.print(v.getSrc() +", ");
+            }
+            System.out.println();
         }
     }
 
