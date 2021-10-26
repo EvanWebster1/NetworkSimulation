@@ -1,7 +1,4 @@
-import java.awt.*;
 import java.io.File;
-import java.sql.Time;
-import java.util.List;
 import java.util.Map;
 import java.util.*;
 import java.util.Scanner;
@@ -9,11 +6,14 @@ import java.io.FileNotFoundException;
 
 public class Graph{
     private Map<String, ArrayList<Vertex>> map;
+    private Map<String, Vertex> vertmap;
 
     //Default constructor to create a graph class.
     //making an instance of map as a hashmap with param: String, and ArrayList of Vertex's
+    //vertmap stored a map of the vertex's stored in a pair with the string of its name.
     public Graph() {
         map = new HashMap<String, ArrayList<Vertex>>();
+        vertmap = new HashMap<String, Vertex>();
     }
 
     //Returns the current hashmap
@@ -21,15 +21,14 @@ public class Graph{
         return map;
     }
 
-    public void setMap(Map<String, ArrayList<Vertex>> map) {
-        this.map = map;
-    }
+    //returns the vertex map
+    public Map<String, Vertex> getVertmap(){return vertmap;}
 
     //adds a new kay pair to the map, only if the src key doesn't
     //already appear in the maps keys
     public void addNewVertex(Vertex src){
-
         map.putIfAbsent(src.getSrc(), new ArrayList<Vertex>());
+        vertmap.putIfAbsent(src.getSrc(), src);
     }
 
     //Removes a String src from the keys of the map
@@ -139,6 +138,23 @@ public class Graph{
             }
             System.out.println();
         }
+    }
+
+    //method for printing all virus' in the network on each of the nodes
+    public void printVirus(){
+        System.out.println("\n Printing virus' in the network \n");
+        for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
+            String k = entry.getKey();
+            System.out.println("Node " +k+ " has virus': " + vertmap.get(k).getVirus());
+        }
+    }
+
+    public void listVirus(String node){
+        if (vertmap.get(node).getVirus().isEmpty()){
+            System.out.println("This node is not infected with any virus' ");
+            return;
+        }
+        System.out.println("The node " +node+ " has virus': " +vertmap.get(node).getVirus());
     }
 
 }

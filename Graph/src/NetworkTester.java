@@ -24,6 +24,7 @@ public class NetworkTester {
                 System.out.println("Enter a City to retrieve connected locations: ");
                 option = keyboard.nextLine();
                 graph.listConnected(option);
+                graph.listVirus(option);
             }
 
             //removes a city of the user choice from the map
@@ -39,6 +40,13 @@ public class NetworkTester {
                 String option2 = keyboard.nextLine();
                 graph.removeEdge(option, option2);
             }
+
+            if (option.equals("virus")){
+                System.out.println("Enter the location and virus to be added: ");
+                option = keyboard.nextLine();
+                String option2 = keyboard.nextLine();
+                graph.getVertmap().get(option).addVirus(option2);
+            }
             System.out.println("What would you like to do?: ");
             option = keyboard.nextLine();
         }
@@ -53,14 +61,15 @@ public class NetworkTester {
         NetworkTester out = new NetworkTester();
         out.userLoop(graph);
 /*
-        graph.listConnected("London");
-        graph.removeVertex("London");
-        graph.listConnected("London");
-        graph.listConnected("Atlanta");
-        graph.listConnected("Johannesburg");
+        graph.getVertmap().get("London").addVirus("Black");
+        graph.getVertmap().get("London").addVirus("Red");
+        graph.getVertmap().get("London").addVirus("Black");
+        System.out.println(graph.getVertmap().get("London").getVirus());
 
  */
 
+        //graph.printVirus();
+        //graph.listVirus("London");
 
     }
 }
