@@ -59,7 +59,8 @@ public class NetworkTester {
         graph.printGraph();
 
         NetworkTester out = new NetworkTester();
-        out.userLoop(graph);
+        //out.userLoop(graph);
+        NetworkGui gui = new NetworkGui(graph);
 /*
         graph.getVertmap().get("London").addVirus("Black");
         graph.getVertmap().get("London").addVirus("Red");
