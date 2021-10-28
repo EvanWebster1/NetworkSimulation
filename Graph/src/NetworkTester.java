@@ -54,23 +54,6 @@ public class NetworkTester {
 
 
     public static void main(String[] args) throws FileNotFoundException {
-        Graph graph = new Graph();
-        graph = graph.createGraph();
-        graph.printGraph();
-
-        NetworkTester out = new NetworkTester();
-        //out.userLoop(graph);
-        NetworkGui gui = new NetworkGui(graph);
-/*
-        graph.getVertmap().get("London").addVirus("Black");
-        graph.getVertmap().get("London").addVirus("Red");
-        graph.getVertmap().get("London").addVirus("Black");
-        System.out.println(graph.getVertmap().get("London").getVirus());
-
- */
-
-        //graph.printVirus();
-        //graph.listVirus("London");
-
+        NetworkGui gui = new NetworkGui();
     }
 }

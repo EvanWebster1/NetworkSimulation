@@ -83,10 +83,36 @@ public class Graph{
     //lines currently split by "," for new cities from their point locations
     //and seperated by "---" to show where adding connections starts
     //returns a graph object
-    public Graph createGraph()throws FileNotFoundException{
+    public Graph createGraph() throws FileNotFoundException{
         Graph g1 = new Graph();
         File myInput = new File("graph.txt");
         Scanner s = new Scanner(myInput);
+        String line = s.nextLine();
+
+        while (!line.equals("---")){
+            String[] tokens = line.split(",");
+
+            g1.addNewVertex(new Vertex(tokens[0]));
+            line = s.nextLine();
+        }
+
+        line = s.nextLine();
+
+        while (s.hasNext()){
+            String[] tokens = line.split(", ");
+
+            g1.addEdge(tokens[0], tokens[1]);
+            line = s.nextLine();
+        }
+
+
+        return g1;
+    }
+
+    public Graph createGraph(File file) throws FileNotFoundException{
+        Graph g1 = new Graph();
+
+        Scanner s = new Scanner(file);
         String line = s.nextLine();
 
         while (!line.equals("---")){

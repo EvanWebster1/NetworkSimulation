@@ -1,8 +1,11 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class NetworkGui implements ActionListener {
@@ -19,9 +22,12 @@ public class NetworkGui implements ActionListener {
     private JTextArea textArea3;
     private JFrame frame;
     private Graph graphui;
+    private JFileChooser jFileChooser;
 
-    public NetworkGui(Graph graph){
-        graphui = graph;
+    private JButton fileSelector;
+
+    public NetworkGui(){
+        //graphui = graph;
         jPanel2 = new JPanel();
         srcLabel = new JLabel();
         srcIn = new JTextField();
@@ -33,6 +39,7 @@ public class NetworkGui implements ActionListener {
         jLabel5 = new JLabel();
         jLabel4 = new JLabel();
         frame = new JFrame();
+        fileSelector = new JButton();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new java.awt.Dimension(1280, 722));
@@ -41,7 +48,46 @@ public class NetworkGui implements ActionListener {
 
         jPanel2.setLayout(null);
 
+        fileSelector.setText("Open");
+        fileSelector.setBounds(10, 10, 100, 25);
+        fileSelector.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jFileChooser = new JFileChooser();
+                jFileChooser.setBounds(420, 140, 500, 326);
+                jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                jFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+
+                if (jFileChooser.showOpenDialog(jPanel2) == JFileChooser.APPROVE_OPTION)
+                {
+                    File file = jFileChooser.getSelectedFile();
+                    System.out.printf("\nOpening file = '%s'\n", file);
+                    try {
+                        initialize(file);
+                    } catch (FileNotFoundException ex) {
+                        System.out.printf("\nFailed to open %s\n", jFileChooser.getSelectedFile());
+                    }
+                }
+            }
+        });
+
+
+        jPanel2.add(fileSelector);
+
         srcLabel.setText("Source");
+        srcLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                System.out.println("Over");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                super.mouseExited(e);
+                System.out.println("out");
+            }
+        });
         jPanel2.add(srcLabel);
         srcLabel.setBounds(20, 340, 60, 20);
 
@@ -122,5 +168,20 @@ public class NetworkGui implements ActionListener {
         }
 
         srcIn.setText("");
+    }
+
+    private void initialize(File source) throws FileNotFoundException {
+        graphui = new Graph();
+        graphui = graphui.createGraph(source);
+        graphui.printGraph();
+
+        graphui.getVertmap().get("London").addVirus("Black");
+        graphui.getVertmap().get("London").addVirus("Red");
+        graphui.getVertmap().get("London").addVirus("Black");
+
+        // System.out.println(graph.getVertmap().get("London").getVirus());
+
+        //graph.printVirus();
+        //graph.listVirus("London");
     }
 }
