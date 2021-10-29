@@ -1,7 +1,7 @@
 <<<<<<< HEAD
 # NetworkSimulation
 =======
->>>>>>> 121f5c2 (Adding README.md)
+
 Network Simulation Project created by Evan Webster, Austin Miller, and Abdulla Yousif.
 This application reads information from two files; Graph.txt, and Attack.txt. Files are 
 required to use the following format:
@@ -22,4 +22,4 @@ selector screen to select the file from a navigation screen. Default takes the p
 where the file is normally located within the project folder. 
 =======
 where the file is normally located within the project folder. 
->>>>>>> 121f5c2 (Adding README.md)
+
