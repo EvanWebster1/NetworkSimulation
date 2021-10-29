@@ -6,10 +6,12 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class NetworkGui implements ActionListener {
 
+    //creating all the private objects used in the creation of a GUI
     private JLabel srcLabel;
     private JLabel jLabel2;
     private JLabel jLabel3;
@@ -21,11 +23,15 @@ public class NetworkGui implements ActionListener {
     private JTextArea textArea2;
     private JTextArea textArea3;
     private JFrame frame;
+    private JFrame popFrame = new JFrame();
     private Graph graphui;
     private JFileChooser jFileChooser;
     private JMenuBar menuBar = new JMenuBar();
     private JMenuItem graphItem, attackItem, defaultItem, animateItem;
 
+    private Map<String, JRadioButton> nodes = new HashMap<>();
+
+    //constructor to build the graph GUI this method builds the main graph screen
     public NetworkGui(){
         //graphui = graph;
         jPanel2 = new JPanel();
@@ -40,7 +46,8 @@ public class NetworkGui implements ActionListener {
         jLabel4 = new JLabel();
         frame = new JFrame();
 
-
+        //setting the frame preferences, making the frame exit when the window is closed
+        //frame size of 1280x722
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new java.awt.Dimension(1280, 722));
         frame.pack();
@@ -112,15 +119,23 @@ public class NetworkGui implements ActionListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
+                popUp();
+                popFrame.setVisible(true);
                 System.out.println("Over");
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 super.mouseExited(e);
+                popFrame.setVisible(false);
                 System.out.println("out");
             }
         });
+
+        JRadioButton test = new JRadioButton();
+        jPanel2.add(test);
+        test.setBounds(90, 240, 20, 20);
+
         jPanel2.add(srcLabel);
         srcLabel.setBounds(20, 340, 60, 20);
 
@@ -152,7 +167,7 @@ public class NetworkGui implements ActionListener {
         jPanel2.add(jLabel5);
         jLabel5.setBounds(150, 550, 100, 14);
 
-        jLabel4.setIcon(new javax.swing.ImageIcon("C:\\Users\\Evan Webster\\Desktop\\Y3T1\\Data Structure\\World Map.jpg")); // NOI18N
+        jLabel4.setIcon(new javax.swing.ImageIcon("World Map.jpg")); // NOI18N
         jPanel2.add(jLabel4);
         jLabel4.setBounds(0, 0, 1280, 720);
 
@@ -171,10 +186,10 @@ public class NetworkGui implements ActionListener {
 
     }
 
+    //method to produce the file drop-down menu used to retrieve the graph and attack data
     public void AddingDropDownMenus(){
         frame.setJMenuBar(menuBar);
         JMenu fileMenu = new JMenu("File");
-        JMenu elementMenu = new JMenu("Elements");
         graphItem = fileMenu.add("Graph");
         attackItem = fileMenu.add("Attack");
         defaultItem = fileMenu.add("Default");
@@ -185,6 +200,7 @@ public class NetworkGui implements ActionListener {
 
     }
 
+    //override method used to fill in the appropriate text areas with graph information
     @Override
     public void actionPerformed(ActionEvent e) {
         Map<String, ArrayList<Vertex>> map = graphui.getMap();
@@ -194,6 +210,7 @@ public class NetworkGui implements ActionListener {
         textArea3.setText("");
 
         if (!map.containsKey(srcIn.getText())){
+            srcIn.setText("");
             textArea1.append("Node isn't valid");
         }
         else{
@@ -217,6 +234,8 @@ public class NetworkGui implements ActionListener {
         srcIn.setText("");
     }
 
+    //creating the graph using the file selected from the file selector
+    //utilizes the override of create graph which takes in a FILE param
     private void initialize(File source) throws FileNotFoundException {
         graphui = new Graph();
         graphui = graphui.createGraph(source);
@@ -233,6 +252,52 @@ public class NetworkGui implements ActionListener {
     }
 
     private void attackInit(File attack)throws FileNotFoundException{
+
+    }
+
+    //settup of the pop up window to display node information
+    private void popUp(){
+
+        JPanel popPanel = new JPanel();
+        JTextArea conected_txtArea = new JTextArea();
+        JTextArea virus_txtArea = new JTextArea();
+        JTextArea virus_stoptxt = new JTextArea();
+        JLabel connected = new JLabel();
+        JLabel virus = new JLabel();
+        JLabel virus_stop = new JLabel();
+
+        popFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        popFrame.setPreferredSize(new java.awt.Dimension(450, 450));
+        popFrame.pack();
+        popFrame.setTitle("Node Information");
+
+        popPanel.setLayout(null);
+
+        conected_txtArea.setEditable(false);
+        popPanel.add(conected_txtArea);
+        conected_txtArea.setBounds(10, 30, 150, 80);
+
+        virus_txtArea.setEditable(false);
+        popPanel.add(virus_txtArea);
+        virus_txtArea.setBounds(10, 150, 150, 80);
+
+        virus_stoptxt.setEditable(false);
+        popPanel.add(virus_stoptxt);
+        virus_stoptxt.setBounds(10, 300, 150, 80);
+
+        connected.setText("Connections");
+        popPanel.add(connected);
+        connected.setBounds(30, 10, 100, 14);
+
+        virus.setText("Virus'");
+        popPanel.add(virus);
+        virus.setBounds(30, 120, 35, 14);
+
+        virus_stop.setText("Virus' Stopped");
+        popPanel.add(virus_stop);
+        virus_stop.setBounds(30, 280, 100, 14);
+
+        popFrame.add(popPanel);
 
     }
 }
