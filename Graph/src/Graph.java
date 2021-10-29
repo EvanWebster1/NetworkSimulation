@@ -85,11 +85,11 @@ public class Graph{
     //returns a graph object
     public Graph createGraph() throws FileNotFoundException{
         Graph g1 = new Graph();
-        File myInput = new File("graph.txt");
+        File myInput = new File("sampleGraph.txt");
         Scanner s = new Scanner(myInput);
         String line = s.nextLine();
 
-        while (!line.equals("---")){
+        while (!line.contains("---")){
             String[] tokens = line.split(",");
 
             g1.addNewVertex(new Vertex(tokens[0]));
@@ -105,6 +105,19 @@ public class Graph{
             line = s.nextLine();
         }
 
+        File myAttack = new File("Attack.txt");
+        Scanner a = new Scanner(myAttack);
+        String aline = a.nextLine();
+
+        while (a.hasNext()){
+            String[] tokens = aline.split(", ");
+            g1.vertmap.get(tokens[0]).addVirus(tokens[1]);
+            aline = a.nextLine();
+            if (!a.hasNext()){
+                tokens = aline.split(",");
+                g1.vertmap.get(tokens[0]).addVirus(tokens[1]);
+            }
+        }
 
         return g1;
     }
@@ -117,7 +130,7 @@ public class Graph{
         String line = s.nextLine();
 
         while (!line.contains("---")){
-            String[] tokens = line.split(",");
+            String[] tokens = line.split(", ");
 
             g1.addNewVertex(new Vertex(tokens[0]));
             line = s.nextLine();
@@ -141,9 +154,13 @@ public class Graph{
         String line = a.nextLine();
 
         while (a.hasNext()){
-            String[] tokens = line.split(",");
+            String[] tokens = line.split(", ");
             vertmap.get(tokens[0]).addVirus(tokens[1]);
             line = a.nextLine();
+            if (!a.hasNext()){
+                tokens = line.split(", ");
+                vertmap.get(tokens[0]).addVirus(tokens[1]);
+            }
         }
     }
 

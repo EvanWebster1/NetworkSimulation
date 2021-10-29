@@ -58,6 +58,8 @@ public class NetworkGui implements ActionListener {
         AddingDropDownMenus();
         menuBar.setBounds(30, 30, 1280, 722);
 
+        //action listener for clicking on the Graph button in the file drop-down
+        //code is exectuted when the button is pressed
         graphItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -79,6 +81,8 @@ public class NetworkGui implements ActionListener {
             }
         });
 
+        //action listener for when the user clicks on
+        //the Attack button in the file drop-down
         attackItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
