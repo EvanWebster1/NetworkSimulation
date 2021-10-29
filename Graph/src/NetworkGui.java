@@ -92,7 +92,8 @@ public class NetworkGui implements ActionListener {
                     File file = jFileChooser.getSelectedFile();
                     System.out.printf("\nOpening file = '%s'\n", file);
                     try {
-                        attackInit(file);
+                        graphui.createAttack(file);
+                        //attackInit(file);
                     } catch (FileNotFoundException ex) {
                         System.out.printf("\nFailed to open %s\n", jFileChooser.getSelectedFile());
                     }
@@ -241,9 +242,11 @@ public class NetworkGui implements ActionListener {
         graphui = graphui.createGraph(source);
         graphui.printGraph();
 
+        /*
         graphui.getVertmap().get("London").addVirus("Black");
         graphui.getVertmap().get("London").addVirus("Red");
         graphui.getVertmap().get("London").addVirus("Black");
+                 */
 
         // System.out.println(graph.getVertmap().get("London").getVirus());
 

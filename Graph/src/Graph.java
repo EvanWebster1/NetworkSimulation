@@ -116,7 +116,7 @@ public class Graph{
         Scanner s = new Scanner(file);
         String line = s.nextLine();
 
-        while (!line.equals("---")){
+        while (!line.contains("---")){
             String[] tokens = line.split(",");
 
             g1.addNewVertex(new Vertex(tokens[0]));
@@ -134,6 +134,17 @@ public class Graph{
 
 
         return g1;
+    }
+
+    public void createAttack(File file) throws FileNotFoundException{
+        Scanner a = new Scanner(file);
+        String line = a.nextLine();
+
+        while (a.hasNext()){
+            String[] tokens = line.split(",");
+            vertmap.get(tokens[0]).addVirus(tokens[1]);
+            line = a.nextLine();
+        }
     }
 
     //Outputs the nodes currently connected to the input string
