@@ -18,8 +18,5 @@ Black as the type of attack, and 2021-05-13, 9:00 as the date and time of the at
 The GUI displays the current graph. to starts working with the GUI you must go to the file
 menu drop-down and select Graph, Attack, or default. Graph and Attack pull up a file 
 selector screen to select the file from a navigation screen. Default takes the path
-<<<<<<< HEAD
-where the file is normally located within the project folder. 
-=======
 where the file is normally located within the project folder. 
 
