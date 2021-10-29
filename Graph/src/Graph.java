@@ -109,6 +109,7 @@ public class Graph{
         return g1;
     }
 
+    //override of createGraph() method used when a FILE param is passed in
     public Graph createGraph(File file) throws FileNotFoundException{
         Graph g1 = new Graph();
 
