@@ -5,6 +5,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,7 +99,7 @@ public class NetworkGui implements ActionListener {
                     try {
                         graphui.createAttack(file);
                         //attackInit(file);
-                    } catch (FileNotFoundException ex) {
+                    } catch (FileNotFoundException | ParseException ex) {
                         System.out.printf("\nFailed to open %s\n", jFileChooser.getSelectedFile());
                     }
                 }
@@ -115,7 +116,7 @@ public class NetworkGui implements ActionListener {
                     graphui.printProtected();
                     graphui.listInfected();
                     graphui.listattacked();
-                } catch (FileNotFoundException ex) {
+                } catch (FileNotFoundException | ParseException fileNotFoundException) {
                     System.out.println("Failed to open Graph.txt");
                 }
             }
@@ -157,11 +158,11 @@ public class NetworkGui implements ActionListener {
 
         textArea2.setEditable(false);
         jPanel2.add(textArea2);
-        textArea2.setBounds(10, 570, 110, 80);
+        textArea2.setBounds(10, 570, 168, 80);
 
         textArea3.setEditable(false);
         jPanel2.add(textArea3);
-        textArea3.setBounds(140, 570, 100, 80);
+        textArea3.setBounds(450, 570, 168, 80);
 
         jLabel2.setText("Connections");
         jPanel2.add(jLabel2);
@@ -173,7 +174,7 @@ public class NetworkGui implements ActionListener {
 
         jLabel5.setText("Virus' Stopped");
         jPanel2.add(jLabel5);
-        jLabel5.setBounds(150, 550, 100, 14);
+        jLabel5.setBounds(450, 550, 100, 14);
 
         jLabel4.setIcon(new javax.swing.ImageIcon("World Map.jpg")); // NOI18N
         jPanel2.add(jLabel4);
@@ -235,7 +236,8 @@ public class NetworkGui implements ActionListener {
         }
         else{
             for (int i = 0; i < vertMap.get(srcIn.getText()).getVirus().size(); i++){
-                textArea2.append(vertMap.get(srcIn.getText()).getVirus().get(i)+ "\n");
+                textArea2.append(vertMap.get(srcIn.getText()).getVirus().get(i).getType()+ " @ "
+                        + vertMap.get(srcIn.getText()).getVirus().get(i).getDate()+ "\n");
             }
         }
         if (vertMap.get(srcIn.getText()).getFirewall_virus().isEmpty()){
@@ -243,7 +245,8 @@ public class NetworkGui implements ActionListener {
         }
         else{
             for (int i = 0; i < vertMap.get(srcIn.getText()).getFirewall_virus().size(); i++){
-                textArea3.append(vertMap.get(srcIn.getText()).getFirewall_virus().get(i)+ "\n");
+                textArea3.append(vertMap.get(srcIn.getText()).getFirewall_virus().get(i).getType()+ " @ "
+                        + vertMap.get(srcIn.getText()).getFirewall_virus().get(i).getDate()+"\n");
             }
         }
 
