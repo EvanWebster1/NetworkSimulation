@@ -3,83 +3,118 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 
-//Class used to store and pull information regarding the individual
-//vertex's in the graph. this information is all information that pertains
-//to the private information about each node.
+/**
+ * Vertex class is used to store and pull all information regarding each individual
+ * Vertex in the graph. This information is private and is accessed through the use
+ * of getter and setter functions within this class
+ */
 public class Vertex {
     private String src;
     private Point Location;
-    private Date date;
-    private Time time;
-    private ArrayList<String> virus;
+    private ArrayList<Virus> virus;
     private Boolean firewall;
-    private ArrayList<String> firewall_virus;
+    private ArrayList<FirewallVirus> firewall_virus;
     private Boolean active;
 
+    /**
+     * Default constructor for setting up each node on the graph
+     * @param label String of node name
+     */
     Vertex(String label){
         this.src = label;
         this.active = true;
-        this.virus = new ArrayList<String>();
-        this.firewall_virus = new ArrayList<String>();
+        this.virus = new ArrayList<Virus>();
+        this.firewall_virus = new ArrayList<FirewallVirus>();
         this.firewall = false;
         this.Location = new Point();
     }
 
-    //setter method for active
+    /**
+     * Setter for private var stating if the node is active
+     * @param active boolean if the node is active
+     */
     public void setActive(Boolean active) {
         this.active = active;
     }
 
-    //setter method for location
+    /**
+     * Setter for the private variable location used in the gui
+     * @param p POINT obj stating location of node on the map
+     */
     public void setLocation(Point p){
         this.Location = p;
     }
 
-    //setter method for virus array list
-    public void setVirus(ArrayList<String> virus){
+    /**
+     * Setter for the virus list that have not been stopped by a firewall
+     * @param virus ArrayList<String> virus' infecting the node
+     */
+    public void setVirus(ArrayList<Virus> virus){
         this.virus = virus;
     }
 
-    //method for adding a virus to the virus array list
-    public void addVirus(String virus){
-        this.virus.add(virus);
+    /**
+     * Method for adding a virus to the virus to the list of infections on the node
+     * @param virus String type of virus to be added
+     */
+    public void addVirus(String type, Date date){
+        this.virus.add(new Virus(type, date));
     }
 
-    //method for adding a virus to the array list virus's stopped by the firewall
-    //takes in param string of the virus type
-    public void addfirewall_virus(String virus){
-        this.firewall_virus.add(virus);
+    /**
+     * Method for adding a virus to the arrayList of virus' stopped
+     * by the firewall
+     * @param virus String of type of virus
+     */
+    public void addfirewall_virus(String type, Date date){
+        this.firewall_virus.add(new FirewallVirus(type, date));
     }
 
-    //getter for firewall virus array list
-    public ArrayList<String> getFirewall_virus() {
+    /**
+     * Getter for the list of virus' stopped by the firewall
+     * @return ArrayList<String>
+     */
+    public ArrayList<FirewallVirus> getFirewall_virus() {
         return firewall_virus;
     }
 
-    //setter for firewall, taking in a boolean
+    /**
+     * Sets if the firewall is active or not
+     * @param firewall boolean
+     */
     public void setFirewall(boolean firewall){
         this.firewall = firewall;
     }
 
-    //getter for src string of the node
+    /**
+     * @return String of node name
+     */
     public String getSrc(){
         return this.src;
     }
 
-    //getter for location point
+    /**
+     * @return POINT location of the node on the map
+     */
     public Point getLocation(){return this.Location;}
 
-    //getter for bool of active
+    /**
+     * @return boolean of if the node is active of not
+     */
     public boolean getActive(){
         return this.active;
     }
 
-    //getter for virus array list
-    public ArrayList<String> getVirus() {
+    /**
+     * @return ArrayList<String>
+     */
+    public ArrayList<Virus> getVirus() {
         return virus;
     }
 
-    //getter for firewall status
+    /**
+     * @return boolean firewall status
+     */
     public Boolean getFirewall() {
         return firewall;
     }

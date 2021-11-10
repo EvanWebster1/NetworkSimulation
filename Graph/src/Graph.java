@@ -1,9 +1,17 @@
 import java.io.File;
+import java.lang.invoke.StringConcatFactory;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.*;
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 
+/**
+ * Graph class is used to make and store the maps that build the overall graph of the network
+ */
 public class Graph{
     private Map<String, ArrayList<Vertex>> map;
     private Map<String, Vertex> vertmap;
@@ -19,8 +27,6 @@ public class Graph{
         //String node name, with the vertex object for the key node
         vertmap = new HashMap<String, Vertex>();
     }
-
-    //Returns the current hashmap
 
     /**
      * @return the current Map of a String node name and its links
@@ -51,9 +57,6 @@ public class Graph{
      * @param src String to be removed
      */
     public void removeVertex (String src){
-        //Vertex src = new Vertex(Src);
-        //map.get(Src).forEach(e ->e.remove(Src));
-        //int i = 0;
 
         for (int i = 0; i < map.get(src).size(); i++){
             Vertex v = new Vertex(map.get(src).get(i).getSrc());
@@ -106,36 +109,39 @@ public class Graph{
     }
 
     /**
-     * Method for creating the graph by parsing through the graph.txt file
-     * and sorting the relevant information into its correct location.
+     * Method for creating the graph by parsing through the graph.txt, and attack.txt file
+     * in the default location, and sorting the relevant information into its correct location.
      * information within lines is split using ", ", and sections are split by a series
      * of "---"
      * @return graph object of build maps
      * @throws FileNotFoundException if the specified files are not found in the default location
      */
-    public Graph createGraph() throws FileNotFoundException{
+    public Graph createGraph() throws FileNotFoundException, ParseException {
+        //importing the graph.txt file in the project folder
         Graph g1 = new Graph();
         File myInput = new File("sampleGraph.txt");
         Scanner s = new Scanner(myInput);
         String line = s.nextLine();
 
+        //looping through the graph.txt file adding the vertex's to the connections map and vertex map
         while (!line.contains("---")){
             String[] tokens = line.split(",");
 
             g1.addNewVertex(new Vertex(tokens[0]));
+            //if there is a 4th split in the line set and it isn't null set firewall to true
             if (tokens.length == 4){
                 if (tokens[3] != null){
                     g1.vertmap.get(tokens[0]).setFirewall(true);
-                    //System.out.println("firewall for " +tokens[0]+ " is " +g1.vertmap.get(tokens[0]).getFirewall());
+
                 }
             }
-
 
             line = s.nextLine();
         }
 
         line = s.nextLine();
 
+        //loop through the second section of graph.txt adding connections between nodes
         while (s.hasNext()){
             String[] tokens = line.split(", ");
 
@@ -143,22 +149,38 @@ public class Graph{
             line = s.nextLine();
         }
 
+        //importing attack.txt file from the default path in the project folder
         File myAttack = new File("Attack.txt");
         Scanner a = new Scanner(myAttack);
         String aline = a.nextLine();
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
+
+        //parsing through the attack.txt file adding virus' to their proper lists
         while (a.hasNext()){
             String[] tokens = aline.split(", ");
+            //if the firewall is active add the virus to the firewallvirus list
+            String date = tokens[2] + " " + tokens[3];
             if (g1.vertmap.get(tokens[0]).getFirewall()){
-                g1.vertmap.get(tokens[0]).addfirewall_virus(tokens[1]);
+                g1.vertmap.get(tokens[0]).addfirewall_virus(tokens[1], formatter.parse(date));
             }
+            //else add virus to the virus list
             else{
-                g1.vertmap.get(tokens[0]).addVirus(tokens[1]);
+                g1.vertmap.get(tokens[0]).addVirus(tokens[1], formatter.parse(date));
             }
+            //same as done or the last line of the file
             aline = a.nextLine();
             if (!a.hasNext()){
                 tokens = aline.split(",");
-                g1.vertmap.get(tokens[0]).addVirus(tokens[1]);
+                String ndate = tokens[2] + " " + tokens[3];
+                if (g1.vertmap.get(tokens[0]).getFirewall()){
+                    g1.vertmap.get(tokens[0]).addfirewall_virus(tokens[1], formatter.parse(ndate));
+                }
+                //else add virus to the virus list
+                else{
+                    g1.vertmap.get(tokens[0]).addVirus(tokens[1], formatter.parse(ndate));
+                }
             }
         }
 
@@ -173,19 +195,26 @@ public class Graph{
      */
     public Graph createGraph(File file) throws FileNotFoundException{
         Graph g1 = new Graph();
-
         Scanner s = new Scanner(file);
         String line = s.nextLine();
 
+        //parsing through the graph file that has been passed in
         while (!line.contains("---")){
             String[] tokens = line.split(", ");
 
             g1.addNewVertex(new Vertex(tokens[0]));
+            if (tokens.length == 4){
+                if (tokens[3] != null){
+                    g1.vertmap.get(tokens[0]).setFirewall(true);
+
+                }
+            }
             line = s.nextLine();
         }
 
         line = s.nextLine();
 
+        //adding the connections between the nodes based on the txt file
         while (s.hasNext()){
             String[] tokens = line.split(", ");
 
@@ -201,17 +230,36 @@ public class Graph{
      * @param file FILE object to be parsed through
      * @throws FileNotFoundException throws error if specified file is not found
      */
-    public void createAttack(File file) throws FileNotFoundException{
+    public void createAttack(File file) throws FileNotFoundException, ParseException {
         Scanner a = new Scanner(file);
-        String line = a.nextLine();
+        String aline = a.nextLine();
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
+
+        //parsing through attack.txt file adding virus' to their proper lists in vertex
         while (a.hasNext()){
-            String[] tokens = line.split(", ");
-            vertmap.get(tokens[0]).addVirus(tokens[1]);
-            line = a.nextLine();
+            String[] tokens = aline.split(", ");
+            String date = tokens[2] + " " + tokens[3];
+            //if the firewall is active add the virus to the firewallvirus list
+            if (vertmap.get(tokens[0]).getFirewall()){
+                vertmap.get(tokens[0]).addfirewall_virus(tokens[1], formatter.parse(date));
+            }
+            //else add virus to the virus list
+            else{
+                vertmap.get(tokens[0]).addVirus(tokens[1], formatter.parse(date));
+            }
+            //same done as in first if for the last line of the file
+            aline = a.nextLine();
             if (!a.hasNext()){
-                tokens = line.split(", ");
-                vertmap.get(tokens[0]).addVirus(tokens[1]);
+                tokens = aline.split(",");
+                if (vertmap.get(tokens[0]).getFirewall()){
+                    vertmap.get(tokens[0]).addfirewall_virus(tokens[1], formatter.parse(date));
+                }
+                //else add virus to the virus list
+                else{
+                    vertmap.get(tokens[0]).addVirus(tokens[1], formatter.parse(date));
+                }
             }
         }
     }
@@ -274,6 +322,10 @@ public class Graph{
             return;
         }
         System.out.println("The node " +node+ " has virus': " +vertmap.get(node).getVirus());
+        for (int i = 0; i < vertmap.get(node).getVirus().size(); i++){
+            System.out.println(vertmap.get(node).getVirus().get(i).getType() + " at: "
+                    + vertmap.get(node).getVirus().get(i).getDate());
+        }
     }
 
     /**
