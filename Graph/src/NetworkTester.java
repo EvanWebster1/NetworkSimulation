@@ -45,7 +45,7 @@ public class NetworkTester {
                 System.out.println("Enter the location and virus to be added: ");
                 option = keyboard.nextLine();
                 String option2 = keyboard.nextLine();
-                graph.getVertmap().get(option).addVirus(option2);
+                //graph.getVertmap().get(option).addVirus(option2);
             }
             System.out.println("What would you like to do?: ");
             option = keyboard.nextLine();
