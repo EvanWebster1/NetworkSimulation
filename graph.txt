@@ -7,44 +7,44 @@ Atlanta, (33.75, -84.39)
 Washington, (38.89, -77.04)
 New York, (40.71, -74.01)
 Miami, (25.77, -80.19)
-Bogota,
-Lima,
-Santiago,
-Buenos Aries,
-Sao Paulo,
-London,
-Paris,
-Madrid,
-Essen,
-Milan,
-Algiers,
-Istanbul,
-St.Petersburg,
-Moscow,
-Bagdad,
-Cairo,
-Tehran,
-Riyadh,
-Khartoum,
-Lagos,
-Kinshasa,
-Johannesburg,
-Karachi,
-Dehli,
-Kolkata,
-Mumbai,
-Hong kong,
-Bangkok,
-Chennai,
-Jakarta,
-Shanghai,
-Beihing,
-Seoul,
-Tokyo,
-Osaka,
-Taipei,
-Manila,
-Ho Che Minh City,
+Bogota
+Lima
+Santiago
+Buenos Aries
+Sao Paulo
+London
+Paris
+Madrid
+Essen
+Milan
+Algiers
+Istanbul
+St.Petersburg
+Moscow
+Bagdad
+Cairo
+Tehran
+Riyadh
+Khartoum
+Lagos
+Kinshasa
+Johannesburg
+Karachi
+Dehli
+Kolkata
+Mumbai
+Hong kong
+Bangkok
+Chennai
+Jakarta
+Shanghai
+Beihing
+Seoul
+Tokyo
+Osaka
+Taipei
+Manila
+Ho Che Minh City
 Sydney
 ---
 Montreal, Taipei

@@ -112,6 +112,9 @@ public class NetworkGui implements ActionListener {
                 try {
                     graphui = graphui.createGraph();
                     graphui.printGraph();
+                    graphui.printProtected();
+                    graphui.listInfected();
+                    graphui.listattacked();
                 } catch (FileNotFoundException ex) {
                     System.out.println("Failed to open Graph.txt");
                 }
@@ -126,20 +129,20 @@ public class NetworkGui implements ActionListener {
                 super.mouseEntered(e);
                 popUp();
                 popFrame.setVisible(true);
-                System.out.println("Over");
+                //System.out.println("Over");
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 super.mouseExited(e);
                 popFrame.setVisible(false);
-                System.out.println("out");
+                //System.out.println("out");
             }
         });
 
         JRadioButton test = new JRadioButton();
         jPanel2.add(test);
-        test.setBounds(90, 240, 20, 20);
+        test.setBounds(107, 240, 20, 20);
 
         jPanel2.add(srcLabel);
         srcLabel.setBounds(20, 340, 60, 20);
@@ -233,6 +236,14 @@ public class NetworkGui implements ActionListener {
         else{
             for (int i = 0; i < vertMap.get(srcIn.getText()).getVirus().size(); i++){
                 textArea2.append(vertMap.get(srcIn.getText()).getVirus().get(i)+ "\n");
+            }
+        }
+        if (vertMap.get(srcIn.getText()).getFirewall_virus().isEmpty()){
+            textArea3.append("No attacks stopped");
+        }
+        else{
+            for (int i = 0; i < vertMap.get(srcIn.getText()).getFirewall_virus().size(); i++){
+                textArea3.append(vertMap.get(srcIn.getText()).getFirewall_virus().get(i)+ "\n");
             }
         }
 

@@ -8,31 +8,48 @@ public class Graph{
     private Map<String, ArrayList<Vertex>> map;
     private Map<String, Vertex> vertmap;
 
-    //Default constructor to create a graph class.
-    //making an instance of map as a hashmap with param: String, and ArrayList of Vertex's
-    //vertmap stored a map of the vertex's stored in a pair with the string of its name.
+    /**
+     * Default constructor to create a graph class.
+     * setting a new map with key of a String and ArrayList of Vertex's
+     * and a vertex map linking a String of the node name to the Vertex object
+     */
     public Graph() {
+        //String of node name, with the list of all connected vertex's
         map = new HashMap<String, ArrayList<Vertex>>();
+        //String node name, with the vertex object for the key node
         vertmap = new HashMap<String, Vertex>();
     }
 
     //Returns the current hashmap
+
+    /**
+     * @return the current Map of a String node name and its links
+     */
     public Map<String, ArrayList<Vertex>> getMap() {
         return map;
     }
 
-    //returns the vertex map
+    /**
+     * @return the current map of string linked to its vertex object
+     */
     public Map<String, Vertex> getVertmap(){return vertmap;}
 
-    //adds a new kay pair to the map, only if the src key doesn't
-    //already appear in the maps keys
+    /**
+     * Adds a new vertex to the links map and the vertex object map
+     * Vertex is only added if it isn't already in the map
+     * @param src Vertex object to be added
+     */
     public void addNewVertex(Vertex src){
         map.putIfAbsent(src.getSrc(), new ArrayList<Vertex>());
         vertmap.putIfAbsent(src.getSrc(), src);
     }
 
-    //Removes a String src from the keys of the map
-    //removes all connections to the node being removed
+    /**
+     * Removes a Vertex from the map
+     * if the vertex passed as a param is in the map
+     * it is removed from the all connected nodes
+     * @param src String to be removed
+     */
     public void removeVertex (String src){
         //Vertex src = new Vertex(Src);
         //map.get(Src).forEach(e ->e.remove(Src));
@@ -47,21 +64,31 @@ public class Graph{
             }
         }
         map.remove(src);
-
+        vertmap.remove(src);
     }
 
-    //Adds the param src and dest (both strings) to the map value
-    //under each corresponding key, therefore creating an edge between the two locations
+    /**
+     * adds an edge from the corresponding map value
+     * each the dest is added to the corresponding src,
+     * and same for src added to dest link
+     * @param src String location 1
+     * @param dest String location 2
+     */
     public void addEdge(String src, String dest){
         Vertex v1 = new Vertex(src);
         Vertex v2 = new Vertex(dest);
-        map.get(v1.getSrc()).add(v2);
-        map.get(v2.getSrc()).add(v1);
+        map.get(src).add(v2);
+        map.get(dest).add(v1);
 
     }
 
-    //removes edge from the graph, using param: String src and dest
-    //this removes the src from the map key dest and vice verse
+    /**
+     * Removes an edge from the map between two Strings passed as params.
+     * each nodes connections are searched through until the opposite
+     * node is found, then removed. repeated for the other connected side.
+     * @param src String location 1
+     * @param dest String location 2
+     */
     public void removeEdge(String src, String dest){
         Vertex v1 = new Vertex(src);
         Vertex v2 = new Vertex(dest);
@@ -78,11 +105,14 @@ public class Graph{
 
     }
 
-    //Method for creating the graph by taking parsing through the graph.txt file
-    //and taking the relevant information and sorting it into its correct location
-    //lines currently split by "," for new cities from their point locations
-    //and seperated by "---" to show where adding connections starts
-    //returns a graph object
+    /**
+     * Method for creating the graph by parsing through the graph.txt file
+     * and sorting the relevant information into its correct location.
+     * information within lines is split using ", ", and sections are split by a series
+     * of "---"
+     * @return graph object of build maps
+     * @throws FileNotFoundException if the specified files are not found in the default location
+     */
     public Graph createGraph() throws FileNotFoundException{
         Graph g1 = new Graph();
         File myInput = new File("sampleGraph.txt");
@@ -93,6 +123,14 @@ public class Graph{
             String[] tokens = line.split(",");
 
             g1.addNewVertex(new Vertex(tokens[0]));
+            if (tokens.length == 4){
+                if (tokens[3] != null){
+                    g1.vertmap.get(tokens[0]).setFirewall(true);
+                    //System.out.println("firewall for " +tokens[0]+ " is " +g1.vertmap.get(tokens[0]).getFirewall());
+                }
+            }
+
+
             line = s.nextLine();
         }
 
@@ -111,7 +149,12 @@ public class Graph{
 
         while (a.hasNext()){
             String[] tokens = aline.split(", ");
-            g1.vertmap.get(tokens[0]).addVirus(tokens[1]);
+            if (g1.vertmap.get(tokens[0]).getFirewall()){
+                g1.vertmap.get(tokens[0]).addfirewall_virus(tokens[1]);
+            }
+            else{
+                g1.vertmap.get(tokens[0]).addVirus(tokens[1]);
+            }
             aline = a.nextLine();
             if (!a.hasNext()){
                 tokens = aline.split(",");
@@ -122,7 +165,12 @@ public class Graph{
         return g1;
     }
 
-    //override of createGraph() method used when a FILE param is passed in
+    /**
+     * Override method of creategraph used when a FILE object is already obtained
+     * @param file FILE object to be searched through
+     * @return Graph object
+     * @throws FileNotFoundException throws error if the specified file is not found in the location
+     */
     public Graph createGraph(File file) throws FileNotFoundException{
         Graph g1 = new Graph();
 
@@ -145,10 +193,14 @@ public class Graph{
             line = s.nextLine();
         }
 
-
         return g1;
     }
 
+    /**
+     * Method for importing the attack file when a FILE object is already obtained
+     * @param file FILE object to be parsed through
+     * @throws FileNotFoundException throws error if specified file is not found
+     */
     public void createAttack(File file) throws FileNotFoundException{
         Scanner a = new Scanner(file);
         String line = a.nextLine();
@@ -164,8 +216,11 @@ public class Graph{
         }
     }
 
-    //Outputs the nodes currently connected to the input string
-    //if the string passed in doesn't exist in the map, tells the user and returns
+    /**
+     * if the node exists on the map it is
+     * outputted with its connected nodes
+     * @param src String node name
+     */
     public void listConnected(String src){
         if (!map.containsKey(src)){
             System.out.println("The City " +src+ " isn't on the map ");
@@ -178,7 +233,10 @@ public class Graph{
         }
     }
 
-    //Method for printing the current keys and values of the graph
+    /**
+     * prints the current state of the graph
+     * with all the nodes and all connections to each node
+     */
     public void printGraph(){
         System.out.println("\n Printing contents of the graph \n");
         if (map.isEmpty()){
@@ -195,7 +253,9 @@ public class Graph{
         }
     }
 
-    //method for printing all virus' in the network on each of the nodes
+    /**
+     * Prints all the virus' in the network on each node
+     */
     public void printVirus(){
         System.out.println("\n Printing virus' in the network \n");
         for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
@@ -204,6 +264,10 @@ public class Graph{
         }
     }
 
+    /**
+     * Lists all virus' on a specific node
+     * @param node String to be searched
+     */
     public void listVirus(String node){
         if (vertmap.get(node).getVirus().isEmpty()){
             System.out.println("This node is not infected with any virus' ");
@@ -212,4 +276,53 @@ public class Graph{
         System.out.println("The node " +node+ " has virus': " +vertmap.get(node).getVirus());
     }
 
+    /**
+     * Prints a list of nodes (with a count) that have firewalls
+     */
+    public void printProtected(){
+        int count = 0;
+        System.out.println();
+        for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
+            String k = entry.getKey();
+            if (vertmap.get(k).getFirewall()){
+                System.out.println(k + " has an active firewall");
+                count++;
+            }
+        }
+        System.out.println("There are a total of " +count+ " Protected nodes");
+    }
+
+    /**
+     * Prints all the infected nodes in the graph
+     */
+    public void listInfected(){
+        int count = 0;
+        System.out.println();
+        for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
+            String k = entry.getKey();
+            if (!vertmap.get(k).getVirus().isEmpty()){
+                System.out.println(k + " is infected");
+                count++;
+            }
+        }
+        System.out.println("There are a total of " +count+ " Protected nodes");
+    }
+
+    /**
+     * Prints all the nodes that have been attacked.
+     * this being virus trying to affect the node but the node
+     * has a firewall
+     */
+    public void listattacked(){
+        int count = 0;
+        System.out.println();
+        for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
+            String k = entry.getKey();
+            if (!vertmap.get(k).getFirewall_virus().isEmpty()){
+                System.out.println(k + " has been attacked with a firewall");
+                count++;
+            }
+        }
+        System.out.println("There are a total of " +count+ " stopped attacks");
+    }
 }
