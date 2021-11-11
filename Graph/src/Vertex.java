@@ -55,7 +55,8 @@ public class Vertex {
 
     /**
      * Method for adding a virus to the virus to the list of infections on the node
-     * @param virus String type of virus to be added
+     * @param type String type of virus to be added
+     * @param date Date object of the date and time of the virus
      */
     public void addVirus(String type, Date date){
         this.virus.add(new Virus(type, date));
@@ -64,7 +65,8 @@ public class Vertex {
     /**
      * Method for adding a virus to the arrayList of virus' stopped
      * by the firewall
-     * @param virus String of type of virus
+     * @param type String of type of virus
+     * @param date Date object for the virus
      */
     public void addfirewall_virus(String type, Date date){
         this.firewall_virus.add(new FirewallVirus(type, date));
