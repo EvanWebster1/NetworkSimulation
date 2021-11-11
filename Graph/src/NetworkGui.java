@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -14,15 +15,15 @@ public class NetworkGui implements ActionListener {
 
     //creating all the private objects used in the creation of a GUI
     private JLabel srcLabel;
-    private JLabel jLabel2;
-    private JLabel jLabel3;
-    private JLabel jLabel4;
-    private JLabel jLabel5;
-    private JPanel jPanel2;
+    private JLabel connectTitle;
+    private JLabel virusTitle;
+    private JLabel background;
+    private JLabel blockedTitle;
+    private JPanel screen;
     private JTextField srcIn;
-    private JTextArea textArea1;
-    private JTextArea textArea2;
-    private JTextArea textArea3;
+    private JTextArea connectList;
+    private JTextArea VirusList;
+    private JTextArea BlockedList;
     private JFrame frame;
     private JFrame popFrame = new JFrame();
     private Graph graphui;
@@ -35,16 +36,16 @@ public class NetworkGui implements ActionListener {
     //constructor to build the graph GUI this method builds the main graph screen
     public NetworkGui(){
         //graphui = graph;
-        jPanel2 = new JPanel();
+        screen = new JPanel();
         srcLabel = new JLabel();
         srcIn = new JTextField();
-        textArea1 = new JTextArea();
-        textArea2 = new JTextArea();
-        textArea3 = new JTextArea();
-        jLabel2 = new JLabel();
-        jLabel3 = new JLabel();
-        jLabel5 = new JLabel();
-        jLabel4 = new JLabel();
+        connectList = new JTextArea();
+        VirusList = new JTextArea();
+        BlockedList = new JTextArea();
+        connectTitle = new JLabel();
+        virusTitle = new JLabel();
+        blockedTitle = new JLabel();
+        background = new JLabel();
         frame = new JFrame();
 
         //setting the frame preferences, making the frame exit when the window is closed
@@ -54,7 +55,7 @@ public class NetworkGui implements ActionListener {
         frame.pack();
         frame.setTitle("Network GUI");
 
-        jPanel2.setLayout(null);
+        screen.setLayout(null);
 
         AddingDropDownMenus();
         menuBar.setBounds(30, 30, 1280, 722);
@@ -69,7 +70,7 @@ public class NetworkGui implements ActionListener {
                 jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 jFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 
-                if (jFileChooser.showOpenDialog(jPanel2) == JFileChooser.APPROVE_OPTION)
+                if (jFileChooser.showOpenDialog(screen) == JFileChooser.APPROVE_OPTION)
                 {
                     File file = jFileChooser.getSelectedFile();
                     System.out.printf("\nOpening file = '%s'\n", file);
@@ -92,7 +93,7 @@ public class NetworkGui implements ActionListener {
                 jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 jFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 
-                if (jFileChooser.showOpenDialog(jPanel2) == JFileChooser.APPROVE_OPTION)
+                if (jFileChooser.showOpenDialog(screen) == JFileChooser.APPROVE_OPTION)
                 {
                     File file = jFileChooser.getSelectedFile();
                     System.out.printf("\nOpening file = '%s'\n", file);
@@ -124,6 +125,7 @@ public class NetworkGui implements ActionListener {
 
 
         srcLabel.setText("Source");
+        srcLabel.setForeground(Color.WHITE);
         srcLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -142,54 +144,71 @@ public class NetworkGui implements ActionListener {
         });
 
         JRadioButton test = new JRadioButton();
-        jPanel2.add(test);
-        test.setBounds(107, 240, 20, 20);
+        screen.add(test);
+        test.setBackground(Color.CYAN);
+        test.setBounds(268, 258, 20, 20);
 
-        jPanel2.add(srcLabel);
+        screen.add(srcLabel);
         srcLabel.setBounds(20, 340, 60, 20);
 
-        jPanel2.add(srcIn);
+        screen.add(srcIn);
         srcIn.setBounds(10, 370, 80, 30);
         srcIn.addActionListener(this);
 
-        textArea1.setEditable(false);
-        jPanel2.add(textArea1);
-        textArea1.setBounds(10, 440, 150, 80);
+        connectList.setEditable(false);
+        JScrollPane conn_scroll = new JScrollPane(connectList);
+        conn_scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        screen.add(conn_scroll);
+        //screen.add(connectList);
+        //connectList.setBounds(10, 440, 150, 80);
+        conn_scroll.setBounds(10, 440, 150, 80);
 
-        textArea2.setEditable(false);
-        jPanel2.add(textArea2);
-        textArea2.setBounds(10, 570, 168, 80);
+        VirusList.setEditable(false);
+        JScrollPane virus_scroll = new JScrollPane(VirusList);
+        virus_scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        screen.add(virus_scroll);
+        //jPanel2.add(VirusList);
+        //VirusList.setBounds(10, 570, 168, 80);
+        virus_scroll.setBounds(10, 570, 168, 80);
 
-        textArea3.setEditable(false);
-        jPanel2.add(textArea3);
-        textArea3.setBounds(450, 570, 168, 80);
+        BlockedList.setEditable(false);
+        JScrollPane Bvirus_scroll = new JScrollPane(BlockedList);
+        Bvirus_scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        screen.add(Bvirus_scroll);
+        Bvirus_scroll.setBounds(470, 570, 168, 80);
+        //jPanel2.add(BlockedList);
+        //BlockedList.setBounds(450, 570, 168, 80);
 
-        jLabel2.setText("Connections");
-        jPanel2.add(jLabel2);
-        jLabel2.setBounds(30, 420, 100, 14);
+        connectTitle.setText("Connections");
+        connectTitle.setForeground(Color.WHITE);
+        screen.add(connectTitle);
+        connectTitle.setBounds(30, 420, 100, 14);
 
-        jLabel3.setText("Virus'");
-        jPanel2.add(jLabel3);
-        jLabel3.setBounds(40, 550, 35, 14);
+        virusTitle.setText("Virus'");
+        virusTitle.setForeground(Color.WHITE);
+        screen.add(virusTitle);
+        virusTitle.setBounds(40, 550, 35, 14);
 
-        jLabel5.setText("Virus' Stopped");
-        jPanel2.add(jLabel5);
-        jLabel5.setBounds(450, 550, 100, 14);
+        blockedTitle.setText("Virus' Stopped");
+        blockedTitle.setForeground(Color.WHITE);
+        screen.add(blockedTitle);
+        blockedTitle.setBounds(470, 550, 100, 14);
 
-        jLabel4.setIcon(new javax.swing.ImageIcon("World Map.jpg")); // NOI18N
-        jPanel2.add(jLabel4);
-        jLabel4.setBounds(0, 0, 1280, 720);
+        background.setIcon(new javax.swing.ImageIcon("WorldM.jpg")); // NOI18N
+        screen.add(background);
+        background.setBounds(0, 0, 1280, 720);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(frame.getContentPane());
         frame.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1280, Short.MAX_VALUE)
+                        .addComponent(screen, javax.swing.GroupLayout.DEFAULT_SIZE, 1280, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+                        .addComponent(screen, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
         );
+        frame.add(screen);
         frame.setVisible(true);
 
 
@@ -214,38 +233,38 @@ public class NetworkGui implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Map<String, ArrayList<Vertex>> map = graphui.getMap();
         Map<String, Vertex> vertMap = graphui.getVertmap();
-        textArea1.setText("");
-        textArea2.setText("");
-        textArea3.setText("");
+        connectList.setText("");
+        VirusList.setText("");
+        BlockedList.setText("");
 
         if (!map.containsKey(srcIn.getText())){
             srcIn.setText("");
-            textArea1.append("Node isn't valid");
+            connectList.append("Node isn't valid");
         }
         else{
             if (map.get(srcIn.getText()).isEmpty()){
-                textArea1.append("Node has no connections");
+                connectList.append("Node has no connections");
             }
             for (Vertex v : map.get(srcIn.getText())){
-                textArea1.append(v.getSrc() +"\n");
+                connectList.append(v.getSrc() +"\n");
             }
         }
 
         if (vertMap.get(srcIn.getText()).getVirus().isEmpty()){
-            textArea2.append("Node has no Virus'");
+            VirusList.append("Node has no Virus'");
         }
         else{
             for (int i = 0; i < vertMap.get(srcIn.getText()).getVirus().size(); i++){
-                textArea2.append(vertMap.get(srcIn.getText()).getVirus().get(i).getType()+ " @ "
+                VirusList.append(vertMap.get(srcIn.getText()).getVirus().get(i).getType()+ " @ "
                         + vertMap.get(srcIn.getText()).getVirus().get(i).getDate()+ "\n");
             }
         }
         if (vertMap.get(srcIn.getText()).getFirewall_virus().isEmpty()){
-            textArea3.append("No attacks stopped");
+            BlockedList.append("No attacks stopped");
         }
         else{
             for (int i = 0; i < vertMap.get(srcIn.getText()).getFirewall_virus().size(); i++){
-                textArea3.append(vertMap.get(srcIn.getText()).getFirewall_virus().get(i).getType()+ " @ "
+                BlockedList.append(vertMap.get(srcIn.getText()).getFirewall_virus().get(i).getType()+ " @ "
                         + vertMap.get(srcIn.getText()).getFirewall_virus().get(i).getDate()+"\n");
             }
         }
