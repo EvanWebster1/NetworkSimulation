@@ -11,5 +11,6 @@ Chongqing, black, 2021-05-26, 3:30:00
 Shanghai, red, 2021-03-21, 10:30:05
 Shanghai, red, 2021-03-21, 10:31:23
 Shanghai, red, 2021-03-21, 10:31:55
+Shanghai, red, 2021-03-21, 10:32:55
 Chicago, blue, 2021-08-30, 23:11:00
 Ottawa, green, 2021-10-25, 15:48:00

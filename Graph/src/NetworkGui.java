@@ -117,6 +117,7 @@ public class NetworkGui implements ActionListener {
                     graphui.printProtected();
                     graphui.listInfected();
                     graphui.listattacked();
+                    graphui.Outbreak();
                 } catch (FileNotFoundException | ParseException fileNotFoundException) {
                     System.out.println("Failed to open Graph.txt");
                 }
