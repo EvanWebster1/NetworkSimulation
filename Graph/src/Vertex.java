@@ -120,4 +120,5 @@ public class Vertex {
     public Boolean getFirewall() {
         return firewall;
     }
+
 }

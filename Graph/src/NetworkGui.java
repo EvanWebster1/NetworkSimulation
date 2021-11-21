@@ -30,6 +30,7 @@ public class NetworkGui implements ActionListener {
     private JFileChooser jFileChooser;
     private JMenuBar menuBar = new JMenuBar();
     private JMenuItem graphItem, attackItem, defaultItem, animateItem;
+    private JMenuItem infectedItem, firewallItem, outbreaksItem, inActiveItem;
 
     private Map<String, JRadioButton> nodes = new HashMap<>();
 
@@ -112,18 +113,47 @@ public class NetworkGui implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 graphui = new Graph();
                 try {
-                    graphui = graphui.createGraph();
+                    graphui = new Graph();
+                    graphui.createGraph();
                     graphui.printGraph();
-                    graphui.printProtected();
-                    graphui.listInfected();
-                    graphui.listattacked();
-                    graphui.Outbreak();
+                    //graphui.printProtected();
+                    //graphui.listInfected();
+                    //graphui.listattacked();
+                    graphui.Outbreak(new ArrayList<String>());
                 } catch (FileNotFoundException | ParseException fileNotFoundException) {
                     System.out.println("Failed to open Graph.txt");
                 }
             }
         });
 
+        infectedItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graphui.listInfected();
+            }
+        });
+
+        firewallItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graphui.printProtected();
+                graphui.listattacked();
+            }
+        });
+
+        outbreaksItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graphui.Outbreak(new ArrayList<>());
+            }
+        });
+
+        inActiveItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graphui.inActive();
+            }
+        });
 
         srcLabel.setText("Source");
         srcLabel.setForeground(Color.WHITE);
@@ -219,14 +249,19 @@ public class NetworkGui implements ActionListener {
     public void AddingDropDownMenus(){
         frame.setJMenuBar(menuBar);
         JMenu fileMenu = new JMenu("File");
+        JMenu viewMenu = new JMenu("View");
         graphItem = fileMenu.add("Graph");
         attackItem = fileMenu.add("Attack");
         defaultItem = fileMenu.add("Default");
         animateItem = fileMenu.add("Animation");
         fileMenu.addSeparator();
+        infectedItem = viewMenu.add("Infected");
+        firewallItem = viewMenu.add("Firewalls");
+        outbreaksItem = viewMenu.add("Outbreaks");
+        inActiveItem = viewMenu.add("InActive");
 
         menuBar.add(fileMenu);
-
+        menuBar.add(viewMenu);
     }
 
     //override method used to fill in the appropriate text areas with graph information
