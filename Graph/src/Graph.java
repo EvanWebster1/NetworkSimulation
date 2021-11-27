@@ -53,7 +53,7 @@ public class Graph{
      * it is removed from the all connected nodes
      * @param src String to be removed
      */
-    public void removeVertex (String src){
+    public void removeConnections (String src){
 
         for (int i = 0; i < map.get(src).size(); i++){
             Vertex v = new Vertex(map.get(src).get(i).getSrc());
@@ -63,8 +63,8 @@ public class Graph{
                 }
             }
         }
-        map.remove(src);
-        vertmap.remove(src);
+        //map.remove(src);
+        //vertmap.remove(src);
     }
 
     /**
@@ -183,10 +183,13 @@ public class Graph{
         }
         for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
             String k = entry.getKey();
-            sort(k, 0, vertmap.get(k).getVirus().size() -1);
-
+            if (!vertmap.get(k).getVirus().isEmpty()){
+                sort(k, 0, vertmap.get(k).getVirus().size() -1);
+            }
+            else if (!vertmap.get(k).getFirewall_virus().isEmpty()){
+                sort(k, 0, vertmap.get(k).getFirewall_virus().size() -1);
+            }
         }
-
     }
 
     /**
@@ -302,7 +305,12 @@ public class Graph{
             String k = entry.getKey();
             System.out.print("Key: " +k+ " is Connected to: ");
             for (Vertex v : map.get(k)){
-                System.out.print(v.getSrc() +", ");
+                if (vertmap.get(k).getActive()){
+                    System.out.print(v.getSrc() +", ");
+                }
+                else{
+                    System.out.println(k+ " is inactive");
+                }
             }
             System.out.println();
         }
@@ -328,13 +336,24 @@ public class Graph{
             System.out.println("This node is not infected with any virus' ");
             return;
         }
-        System.out.println("The node " +node+ " has virus': " +vertmap.get(node).getVirus());
+        System.out.println("The node " +node+ " has " + vertmap.get(node).getVirus().size()+ " Virus'");
         for (int i = 0; i < vertmap.get(node).getVirus().size(); i++){
             System.out.println(vertmap.get(node).getVirus().get(i).getType() + " at: "
                     + vertmap.get(node).getVirus().get(i).getDate());
         }
     }
 
+    public void listFirewallVirus(String node){
+        if (vertmap.get(node).getFirewall_virus().isEmpty()){
+            System.out.println("This node has not blocked any virus' ");
+            return;
+        }
+        System.out.println("The node " +node+ " has blocked " + vertmap.get(node).getFirewall_virus().size()+ " Virus'");
+        for (int i = 0; i < vertmap.get(node).getFirewall_virus().size(); i++){
+            System.out.println(vertmap.get(node).getFirewall_virus().get(i).getType() + " at: "
+                    + vertmap.get(node).getFirewall_virus().get(i).getDate());
+        }
+    }
     /**
      * Prints a list of nodes (with a count) that have firewalls
      */
@@ -407,8 +426,7 @@ public class Graph{
      * @return ArrayList<String> of all nodes that have an outbreak;
      */
     public ArrayList<String> Outbreak(ArrayList<String> outbreaks){
-        //ArrayList<String> outbreak = new ArrayList<>();
-        System.out.println();
+
         int size = outbreaks.size();
 
         for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
@@ -417,6 +435,22 @@ public class Graph{
             long time = 0;
 
             if (!outbreaks.contains(k) && vertmap.get(k).getActive()){
+                if (vertmap.get(k).getVirus().size() >= 2 && vertmap.get(k).getVirus().size() <= 3){
+                    for (int j = 0; j < vertmap.get(k).getVirus().size(); j++){
+                        if (j == 0){
+                            continue;
+                        }
+                        else{
+                            time += TimeBetween(vertmap.get(k).getVirus().get(j).getDate(), vertmap.get(k).getVirus().get(j-1).getDate());
+                        }
+                        type.add(vertmap.get(k).getVirus().get(j).getType());
+                        if ((time <= 120) && (type.size() ==1)){
+                            vertmap.get(k).addAlerts(1);
+                        }
+
+                    }
+                }
+
                 if (vertmap.get(k).getVirus().size() >= 4){
                     for (int i = 0; i <= vertmap.get(k).getVirus().size() -1; i++){
                         if (i == 0){
@@ -428,10 +462,11 @@ public class Graph{
 
                         type.add(vertmap.get(k).getVirus().get(i).getType());
 
+
                         if ((i == 3) && (type.size() == 1) && (time <= 240)){
                             outbreaks.add(k);
                             String Stype = type.iterator().next();
-                            System.out.println("There is an outbreak on Node: " +k+ " of type: " +Stype);
+                            //System.out.println("There is an outbreak on Node: " +k+ " of type: " +Stype);
 
                             for (Vertex v : map.get(k)){
                                 if (vertmap.get(v.getSrc()).getFirewall()){
@@ -440,13 +475,14 @@ public class Graph{
                                 else{
                                     vertmap.get(v.getSrc()).addVirus(Stype, vertmap.get(k).getVirus().get(i).getDate());
                                 }
-                                System.out.println("Virus type " +Stype+ " has been added to node " +v.getSrc()+ " at "
-                                        +vertmap.get(k).getVirus().get(i).getDate());
+                                //System.out.println("Virus type " +Stype+ " has been added to node " +v.getSrc()+ " at "
+                                //        +vertmap.get(k).getVirus().get(i).getDate());
                             }
                         }
                         if ((i == 5) && (type.size() > 1) && (time <= 360)){
                             vertmap.get(k).setActive(false);
-                            System.out.println(k+ " has aquired too many virus', node is now offline");
+                            removeConnections(k);
+                            //System.out.println(k+ " has aquired too many virus', node is now offline");
                         }
                     }
                 }
@@ -455,7 +491,10 @@ public class Graph{
         if (outbreaks.size() == size){
             return outbreaks;
         }
-        return Outbreak(outbreaks);
+        else{
+            return Outbreak(outbreaks);
+        }
+
     }
 
     /**
@@ -473,56 +512,144 @@ public class Graph{
         }
     }
 
-
+    /**
+     * Sorts the array of virus' into separate lists based on type
+     * each of the 4 type based lists are sorted based on date using DateSort method.
+     * The sorted lists are added to the final sorted list of virus
+     * the Virus list within Vertex is then set equal to the sorted list
+     * @param node String of the Vertex name
+     * @param low int of the first index for sorting to be started at
+     * @param high int of the last index to be sorted to
+     */
     public void sort(String node, int low, int high){
-        ArrayList<Virus> red = new ArrayList<>();
-        ArrayList<Virus> blue = new ArrayList<>();
-        ArrayList<Virus> black = new ArrayList<>();
-        ArrayList<Virus> green = new ArrayList<>();
-
-        ArrayList<Virus> sorted = new ArrayList<>();
-        if (vertmap.get(node).getVirus() == null || vertmap.get(node).getVirus().size() == 0){
-            return;
-        }
-        if (low >= high){
-            return;
-        }
-
-        for (int i = 0; i < vertmap.get(node).getVirus().size() -1; i++){
-            if (vertmap.get(node).getVirus().get(i).getType().equals("red")){
-                red.add(vertmap.get(node).getVirus().get(i));
+        //for sorting the firewall virus'
+        if (!vertmap.get(node).getFirewall_virus().isEmpty()){
+            if (vertmap.get(node).getFirewall_virus() == null || vertmap.get(node).getFirewall_virus().size() == 0){
+                return;
             }
-            else if (vertmap.get(node).getVirus().get(i).getType().equals("blue")){
-                blue.add(vertmap.get(node).getVirus().get(i));
+            if (low >= high){
+                return;
             }
-            else if (vertmap.get(node).getVirus().get(i).getType().equals("black")){
-                black.add(vertmap.get(node).getVirus().get(i));
-            }
-            else if (vertmap.get(node).getVirus().get(i).getType().equals("green")){
-                green.add(vertmap.get(node).getVirus().get(i));
-            }
-        }
-        red = DateSort(red, low, red.size() -1);
-        blue = DateSort(blue, low, blue.size() -1);
-        black = DateSort(black, low, black.size() -1);
-        green = DateSort(green, low, green.size() -1);
+            ArrayList<FirewallVirus> red = new ArrayList<>();
+            ArrayList<FirewallVirus> blue = new ArrayList<>();
+            ArrayList<FirewallVirus> black = new ArrayList<>();
+            ArrayList<FirewallVirus> green = new ArrayList<>();
 
-        ArrayList<Virus>[] size = new ArrayList[]{red, blue, black, green};
-
-
-        for (int i = 0; i < size.length -1; i++){
-            int most = i;
-            for (int j = i; j < size.length -1; j++){
-                if (size[most].size() < size[j].size()){
-                    most = j;
+            ArrayList<FirewallVirus> sorted = new ArrayList<>();
+            for (int i = 0; i < vertmap.get(node).getFirewall_virus().size(); i++){
+                if (vertmap.get(node).getFirewall_virus().get(i).getType().equals("red")){
+                    red.add(vertmap.get(node).getFirewall_virus().get(i));
+                }
+                else if (vertmap.get(node).getFirewall_virus().get(i).getType().equals("blue")){
+                    blue.add(vertmap.get(node).getFirewall_virus().get(i));
+                }
+                else if (vertmap.get(node).getFirewall_virus().get(i).getType().equals("black")){
+                    black.add(vertmap.get(node).getFirewall_virus().get(i));
+                }
+                else if (vertmap.get(node).getFirewall_virus().get(i).getType().equals("green")){
+                    green.add(vertmap.get(node).getFirewall_virus().get(i));
                 }
             }
-            sorted.addAll(size[most]);
+            red = FDateSort(red, low, red.size() -1);
+            blue = FDateSort(blue, low, blue.size() -1);
+            black = FDateSort(black, low, black.size() -1);
+            green = FDateSort(green, low, green.size() -1);
+
+            ArrayList<ArrayList<FirewallVirus>> size = new ArrayList<>();
+            if (!red.isEmpty()){
+                size.add(red);
+
+            }
+            if (!blue.isEmpty()){
+                size.add(blue);
+            }
+            if(!black.isEmpty()){
+                size.add(black);
+            }
+            if(!green.isEmpty()){
+                size.add(green);
+            }
+
+            for (int i = 0; i < size.size(); i++){
+                int most = i;
+                for (int j = i; j < size.size(); j++){
+                    if (size.get(most).size() < size.get(j).size()){
+                        most = j;
+                    }
+                }
+                sorted.addAll(size.get(most));
+            }
+            vertmap.get(node).setFirewall_virus(sorted);
         }
-        vertmap.get(node).setVirus(sorted);
+        //For Sorting the Virus List
+        else if (!vertmap.get(node).getVirus().isEmpty()){
+            if (vertmap.get(node).getVirus() == null || vertmap.get(node).getVirus().size() == 0){
+                return;
+            }
+            if (low >= high){
+                return;
+            }
+            ArrayList<Virus> red = new ArrayList<>();
+            ArrayList<Virus> blue = new ArrayList<>();
+            ArrayList<Virus> black = new ArrayList<>();
+            ArrayList<Virus> green = new ArrayList<>();
+
+            ArrayList<Virus> sorted = new ArrayList<>();
+            for (int i = 0; i < vertmap.get(node).getVirus().size() ; i++){
+                if (vertmap.get(node).getVirus().get(i).getType().equals("red")){
+                    red.add(vertmap.get(node).getVirus().get(i));
+                }
+                else if (vertmap.get(node).getVirus().get(i).getType().equals("blue")){
+                    blue.add(vertmap.get(node).getVirus().get(i));
+                }
+                else if (vertmap.get(node).getVirus().get(i).getType().equals("black")){
+                    black.add(vertmap.get(node).getVirus().get(i));
+                }
+                else if (vertmap.get(node).getVirus().get(i).getType().equals("green")){
+                    green.add(vertmap.get(node).getVirus().get(i));
+                }
+            }
+            red = DateSort(red, low, red.size() -1);
+            blue = DateSort(blue, low, blue.size() -1);
+            black = DateSort(black, low, black.size() -1);
+            green = DateSort(green, low, green.size() -1);
+
+            ArrayList<ArrayList<Virus>> size = new ArrayList<>();
+            if (!red.isEmpty()){
+                size.add(red);
+
+            }
+            if (!blue.isEmpty()){
+                size.add(blue);
+            }
+            if(!black.isEmpty()){
+                size.add(black);
+            }
+            if(!green.isEmpty()){
+                size.add(green);
+            }
+
+            for (int i = 0; i < size.size(); i++){
+                int most = i;
+                for (int j = i; j < size.size(); j++){
+                    if (size.get(most).size() < size.get(j).size()){
+                        most = j;
+                    }
+                }
+                sorted.addAll(size.get(most));
+            }
+            vertmap.get(node).setVirus(sorted);
+        }
 
     }
 
+    /**
+     * Sorts the passed in ArrayList of Virus Objects in chronological order
+     * @param type ArrayList<Virus> of sorted type virus'
+     * @param low int lowest index to be sorted of the ArrayList
+     * @param high int highest index to be sorted of the ArrayList
+     * @return ArrayList<Virus> sorted in chronological order
+     */
     public ArrayList<Virus> DateSort(ArrayList<Virus> type, int low, int high){
         if (type.isEmpty() || type.size() < 2){
             return type;
@@ -555,5 +682,71 @@ public class Graph{
         return type;
     }
 
+    /**
+     * Sorts the passed in ArrayList of FirewallVirus objects in chronological order
+     * @param type ArrayList<FirewallVirus> of sorted by type
+     * @param low int lowest index to be sorted of the ArrayList
+     * @param high int highest index to be sorted of the ArrayList
+     * @return ArrayList<FirewallVirus> sorted in chronological order
+     */
+    public ArrayList<FirewallVirus> FDateSort(ArrayList<FirewallVirus> type, int low, int high){
+        if (type.isEmpty() || type.size() < 2){
+            return type;
+        }
+        int middle = low + (high - low) / 2;
+        FirewallVirus pivot = type.get(middle);
+
+        int i = low, j = high;
+
+        while (type.get(i).getDate().compareTo(pivot.getDate()) < 0){
+            i++;
+        }
+        while (type.get(j).getDate().compareTo(pivot.getDate()) > 0){
+            j--;
+        }
+        if (i <= j){
+            FirewallVirus temp = type.get(i);
+            type.set(i, type.get(j));
+            type.set(j, temp);
+            i++;
+            j--;
+        }
+        if (low < j){
+            type = FDateSort(type, low, j);
+        }
+        if (high > i){
+            type = FDateSort(type, i, high);
+        }
+
+        return type;
+    }
+
+    public void Alerts() {
+
+        for (Map.Entry<String, Vertex> entry : vertmap.entrySet()) {
+            String k = entry.getKey();
+            Set<String> type = new HashSet<>();
+            long time = 0;
+
+            if (vertmap.get(k).getVirus().size() >= 2) {
+                for (int j = 0; j < vertmap.get(k).getVirus().size(); j++) {
+                    if (j == 0) {
+                        continue;
+                    }
+                    else {
+                        time += TimeBetween(vertmap.get(k).getVirus().get(j).getDate(), vertmap.get(k).getVirus().get(j - 1).getDate());
+                    }
+
+                    String type1 = vertmap.get(k).getVirus().get(j).getType();
+                    String type2 = vertmap.get(k).getVirus().get(j-1).getType();
+
+                    if ((time <= 120) && (type1.equals(type2))) {
+                        vertmap.get(k).addAlerts(1);
+                    }
+                }
+            }
+
+        }
+    }
 
 }

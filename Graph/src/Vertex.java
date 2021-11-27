@@ -15,6 +15,7 @@ public class Vertex {
     private Boolean firewall;
     private ArrayList<FirewallVirus> firewall_virus;
     private Boolean active;
+    private int alerts;
 
     /**
      * Default constructor for setting up each node on the graph
@@ -27,6 +28,7 @@ public class Vertex {
         this.firewall_virus = new ArrayList<FirewallVirus>();
         this.firewall = false;
         this.Location = new Point();
+        this.alerts = 0;
     }
 
     /**
@@ -121,4 +123,19 @@ public class Vertex {
         return firewall;
     }
 
+    public void setFirewall_virus(ArrayList<FirewallVirus> firewall_virus){
+        this.firewall_virus = firewall_virus;
+    }
+
+    public int getAlerts() {
+        return alerts;
+    }
+
+    public void setAlerts(int alerts) {
+        this.alerts = alerts;
+    }
+
+    public void addAlerts(int numToAdd){
+        this.alerts += numToAdd;
+    }
 }

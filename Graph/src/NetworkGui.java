@@ -33,6 +33,7 @@ public class NetworkGui implements ActionListener {
     private JMenuItem infectedItem, firewallItem, outbreaksItem, inActiveItem;
 
     private Map<String, JRadioButton> nodes = new HashMap<>();
+    StopWatch st = new StopWatch();
 
     //constructor to build the graph GUI this method builds the main graph screen
     public NetworkGui(){
@@ -48,7 +49,6 @@ public class NetworkGui implements ActionListener {
         blockedTitle = new JLabel();
         background = new JLabel();
         frame = new JFrame();
-
         //setting the frame preferences, making the frame exit when the window is closed
         //frame size of 1280x722
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -113,13 +113,13 @@ public class NetworkGui implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 graphui = new Graph();
                 try {
-                    graphui = new Graph();
+                    //graphui = new Graph();
                     graphui.createGraph();
                     graphui.printGraph();
                     //graphui.printProtected();
                     //graphui.listInfected();
                     //graphui.listattacked();
-                    graphui.Outbreak(new ArrayList<String>());
+                    //graphui.Outbreak(new ArrayList<String>());
                 } catch (FileNotFoundException | ParseException fileNotFoundException) {
                     System.out.println("Failed to open Graph.txt");
                 }
@@ -173,11 +173,12 @@ public class NetworkGui implements ActionListener {
                 //System.out.println("out");
             }
         });
-
+        int x = (int) ((1280) * (180 + (-122.42)) / 360);
+        int y = (int) ((720) * (90 - (37.77)) / 180);
         JRadioButton test = new JRadioButton();
         screen.add(test);
         test.setBackground(Color.CYAN);
-        test.setBounds(268, 258, 20, 20);
+        test.setBounds(x, y, 20, 20);
 
         screen.add(srcLabel);
         srcLabel.setBounds(20, 340, 60, 20);
@@ -267,6 +268,8 @@ public class NetworkGui implements ActionListener {
     //override method used to fill in the appropriate text areas with graph information
     @Override
     public void actionPerformed(ActionEvent e) {
+        st.reset();
+        st.start();
         Map<String, ArrayList<Vertex>> map = graphui.getMap();
         Map<String, Vertex> vertMap = graphui.getVertmap();
         connectList.setText("");
@@ -304,8 +307,9 @@ public class NetworkGui implements ActionListener {
                         + vertMap.get(srcIn.getText()).getFirewall_virus().get(i).getDate()+"\n");
             }
         }
-
         srcIn.setText("");
+        st.stop();
+        System.out.println("It took " +st.getElapsedTime()+ " miliseconds to get nodes information");
     }
 
     //creating the graph using the file selected from the file selector
