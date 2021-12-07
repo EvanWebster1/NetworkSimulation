@@ -10,7 +10,6 @@ import java.util.Date;
  */
 public class Vertex {
     private String src;
-    private Point Location;
     private ArrayList<Virus> virus;
     private Boolean firewall;
     private ArrayList<FirewallVirus> firewall_virus;
@@ -27,7 +26,6 @@ public class Vertex {
         this.virus = new ArrayList<Virus>();
         this.firewall_virus = new ArrayList<FirewallVirus>();
         this.firewall = false;
-        this.Location = new Point();
         this.alerts = 0;
     }
 
@@ -37,14 +35,6 @@ public class Vertex {
      */
     public void setActive(Boolean active) {
         this.active = active;
-    }
-
-    /**
-     * Setter for the private variable location used in the gui
-     * @param p POINT obj stating location of node on the map
-     */
-    public void setLocation(Point p){
-        this.Location = p;
     }
 
     /**
@@ -96,11 +86,6 @@ public class Vertex {
     public String getSrc(){
         return this.src;
     }
-
-    /**
-     * @return POINT location of the node on the map
-     */
-    public Point getLocation(){return this.Location;}
 
     /**
      * @return boolean of if the node is active of not

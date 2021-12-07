@@ -48,9 +48,8 @@ public class Graph{
     }
 
     /**
-     * Removes a Vertex from the map
-     * if the vertex passed as a param is in the map
-     * it is removed from the all connected nodes
+     * Removes all the connections from a node specified as a param
+     * the specified node is also removed from all connected nodes connections
      * @param src String to be removed
      */
     public void removeConnections (String src){
@@ -63,8 +62,6 @@ public class Graph{
                 }
             }
         }
-        //map.remove(src);
-        //vertmap.remove(src);
     }
 
     /**
@@ -75,10 +72,13 @@ public class Graph{
      * @param dest String location 2
      */
     public void addEdge(String src, String dest){
-        Vertex v1 = new Vertex(src);
-        Vertex v2 = new Vertex(dest);
-        map.get(src).add(v2);
-        map.get(dest).add(v1);
+        //adds the edge between the two nodes only if the edge doesn't exist
+        if (!map.get(src).contains(vertmap.get(dest))){
+            map.get(src).add(vertmap.get(dest));
+        }
+        if (!map.get(dest).contains(vertmap.get(src))){
+            map.get(dest).add(vertmap.get(src));
+        }
 
     }
 
@@ -115,8 +115,9 @@ public class Graph{
      */
     public void createGraph() throws FileNotFoundException, ParseException {
         //importing the graph.txt file in the project folder
-        //Graph g1 = new Graph();
-        File myInput = new File("sampleGraph.txt");
+
+        File myInput = new File("Graph.txt");
+        //File myInput = new File("sampleGraph.txt");
         Scanner s = new Scanner(myInput);
         String line = s.nextLine();
 
@@ -147,7 +148,8 @@ public class Graph{
         }
 
         //importing attack.txt file from the default path in the project folder
-        File myAttack = new File("Attack.txt");
+        File myAttack = new File("ownAttack.txt");
+        //File myAttack = new File("Attack.txt");
         Scanner a = new Scanner(myAttack);
         String aline = a.nextLine();
 
@@ -181,6 +183,8 @@ public class Graph{
             }
 
         }
+        //sort all the virus' in the node being attacked by decending number of types
+        //where each type is sorted chronologically
         for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
             String k = entry.getKey();
             if (!vertmap.get(k).getVirus().isEmpty()){
@@ -303,27 +307,19 @@ public class Graph{
         }
         for (Map.Entry<String, ArrayList<Vertex>> entry : map.entrySet()){
             String k = entry.getKey();
-            System.out.print("Key: " +k+ " is Connected to: ");
+            if (!vertmap.get(k).getActive()){
+                System.out.print(k+ " is inactive");
+            }
+            else{
+                System.out.print("Key: " +k+ " is Connected to: ");
+            }
+
             for (Vertex v : map.get(k)){
                 if (vertmap.get(k).getActive()){
                     System.out.print(v.getSrc() +", ");
                 }
-                else{
-                    System.out.println(k+ " is inactive");
-                }
             }
             System.out.println();
-        }
-    }
-
-    /**
-     * Prints all the virus' in the network on each node
-     */
-    public void printVirus(){
-        System.out.println("\n Printing virus' in the network \n");
-        for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
-            String k = entry.getKey();
-            System.out.println("Node " +k+ " has virus': " + vertmap.get(k).getVirus());
         }
     }
 
@@ -383,7 +379,7 @@ public class Graph{
                 count++;
             }
         }
-        System.out.println("There are a total of " +count+ " Protected nodes");
+        System.out.println("There are a total of " +count+ " infected nodes");
     }
 
     /**
@@ -401,7 +397,7 @@ public class Graph{
                 count++;
             }
         }
-        System.out.println("There are a total of " +count+ " stopped attacks");
+        System.out.println("There are a total of " +count+ " nodes that have been attacked with a firewall");
     }
 
     /**
@@ -412,8 +408,7 @@ public class Graph{
      */
     public long TimeBetween(Date date1, Date date2){
         long time;
-        time = Math.abs((date2.getTime() - date1.getTime()) / 1000) ;
-        //System.out.println("There are: " +(date1.getTime() - date2.getTime()) / 1000+ " seconds between the two dates " + time);
+        time = ((date1.getTime() - date2.getTime()) / 1000) ;
         return time;
     }
 
@@ -428,87 +423,177 @@ public class Graph{
     public ArrayList<String> Outbreak(ArrayList<String> outbreaks){
 
         int size = outbreaks.size();
-
+        //loop used to retrieve all the node keys to the String k
         for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
             String k = entry.getKey();
             Set<String> type = new HashSet<>();
+            ArrayList<Virus> added = new ArrayList<>();
             long time = 0;
+            int prev = 0;
 
+            //only attempts to find outbreaks if the node has 4 or more infections, is active, and
+            // doesn't already have an outbreak
             if (!outbreaks.contains(k) && vertmap.get(k).getActive()){
-                if (vertmap.get(k).getVirus().size() >= 2 && vertmap.get(k).getVirus().size() <= 3){
-                    for (int j = 0; j < vertmap.get(k).getVirus().size(); j++){
-                        if (j == 0){
-                            continue;
-                        }
-                        else{
-                            time += TimeBetween(vertmap.get(k).getVirus().get(j).getDate(), vertmap.get(k).getVirus().get(j-1).getDate());
-                        }
-                        type.add(vertmap.get(k).getVirus().get(j).getType());
-                        if ((time <= 120) && (type.size() ==1)){
-                            vertmap.get(k).addAlerts(1);
-                        }
-
-                    }
-                }
-
                 if (vertmap.get(k).getVirus().size() >= 4){
                     for (int i = 0; i <= vertmap.get(k).getVirus().size() -1; i++){
-                        if (i == 0){
+                        //if the virus type is different from the lastvirus. clear all information stored
+                        //and start looking for an outbreak of that type
+                        if (!type.contains(vertmap.get(k).getVirus().get(i).getType()) && !type.isEmpty()){
+                            type.clear();
+                            added.clear();
+                            type.add(vertmap.get(k).getVirus().get(i).getType());
+                            added.add(vertmap.get(k).getVirus().get(i));
+                            time = 0;
+                            prev = i;
                             continue;
                         }
+                        else if (i == 0){
+                            type.add(vertmap.get(k).getVirus().get(i).getType());
+                            added.add(vertmap.get(k).getVirus().get(i));
+                        }
                         else{
-                            time += TimeBetween(vertmap.get(k).getVirus().get(i).getDate(), vertmap.get(k).getVirus().get(i-1).getDate());
+                            //setting a tempTime to the time between current virus and prev virus
+                            long tempTime = TimeBetween(vertmap.get(k).getVirus().get(i).getDate(),
+                                    vertmap.get(k).getVirus().get(prev).getDate());
+                            //if the tempTime fits criteria for 4 min then it gets added to the total time
+                            if (tempTime <=240){
+                                time += tempTime;
+                                prev = i;
+                                if (time <= 240){
+                                    //when time is less than 4 min the current type and virus get added to
+                                    //their set, and list
+                                    type.add(vertmap.get(k).getVirus().get(i).getType());
+                                    added.add(vertmap.get(k).getVirus().get(i));
+                                }
+                            }
                         }
 
-                        type.add(vertmap.get(k).getVirus().get(i).getType());
-
-
-                        if ((i == 3) && (type.size() == 1) && (time <= 240)){
+                        //if all the criteria for an outbreak are met, add the node to the list of outbreaks
+                        if ((added.size() >= 4 && (time <=240))){
                             outbreaks.add(k);
                             String Stype = type.iterator().next();
-                            //System.out.println("There is an outbreak on Node: " +k+ " of type: " +Stype);
+                            type.clear();
+                            added.clear();
 
+                            //add 1 virus to each node connected to the outbreak source at the time
+                            //of the infections that caused the outbreak
                             for (Vertex v : map.get(k)){
                                 if (vertmap.get(v.getSrc()).getFirewall()){
                                     vertmap.get(v.getSrc()).addfirewall_virus(Stype, vertmap.get(k).getVirus().get(i).getDate());
+                                    sort(v.getSrc(), 0, v.getFirewall_virus().size()-1);
                                 }
                                 else{
                                     vertmap.get(v.getSrc()).addVirus(Stype, vertmap.get(k).getVirus().get(i).getDate());
+                                    sort(v.getSrc(), 0, v.getVirus().size()-1);
                                 }
-                                //System.out.println("Virus type " +Stype+ " has been added to node " +v.getSrc()+ " at "
-                                //        +vertmap.get(k).getVirus().get(i).getDate());
                             }
-                        }
-                        if ((i == 5) && (type.size() > 1) && (time <= 360)){
-                            vertmap.get(k).setActive(false);
-                            removeConnections(k);
-                            //System.out.println(k+ " has aquired too many virus', node is now offline");
                         }
                     }
                 }
             }
         }
+        //when no more outbreaks have been found, call alerts, putOffline,
+        // and sort the changed virus lists
         if (outbreaks.size() == size){
+            Alerts();
+            putOffline(outbreaks);
+            for (String s : outbreaks){
+                sort(s, 0, vertmap.get(s).getVirus().size()-1);
+            }
+            int count = 1;
+            for (int i = 0; i < outbreaks.size(); i++){
+                if ((i + 1) < outbreaks.size()){
+                    if (!outbreaks.get(i+1).equals(outbreaks.get(i))){
+                        System.out.println("Node " + outbreaks.get(i)+ " has " +count+ " outbreaks");
+                        count = 1;
+                    }
+                    else{
+                        count++;
+                    }
+                }
+                else{
+                    System.out.println("Node " + outbreaks.get(i)+ " has " +count+ " outbreaks");
+                }
+
+            }
             return outbreaks;
         }
         else{
+            //recursively call outbreaks with the current list of outbreaks found
             return Outbreak(outbreaks);
         }
 
     }
 
+    public void putOffline(ArrayList<String> toCheck){
+
+        Set<String> type = new HashSet<>();
+        ArrayList<Virus> added = new ArrayList<>();
+
+        //check all nodes that have an outbreak
+        for (String s : toCheck) {
+            if(!vertmap.get(s).getActive()){
+                continue;
+            }
+            long time = 0;
+            int prev = 0;
+
+            //if the node is infected with 6 or more virus'
+            // check if fits critera for being put offline
+            if (vertmap.get(s).getVirus().size() >= 6) {
+                for (int i = 0; i < vertmap.get(s).getVirus().size(); i++){
+                    //add the first virus information to the set, and list
+                    if (i == 0){
+                        type.add(vertmap.get(s).getVirus().get(i).getType());
+                        added.add(vertmap.get(s).getVirus().get(i));
+                    }
+                    else{
+                        //checking each set of dates if the time between them is less than 6 min
+                        long tempTime = TimeBetween(vertmap.get(s).getVirus().get(i).getDate(),
+                                vertmap.get(s).getVirus().get(prev).getDate());
+                        if (tempTime < 360){
+                            //when the time between the virus is less than 6 min add it to the total time
+                            //and set the prev index to the current one, save the virus information
+                            time += tempTime;
+                            prev = i;
+                            if(time <= 360){
+                                type.add(vertmap.get(s).getVirus().get(i).getType());
+                                added.add(vertmap.get(s).getVirus().get(i));
+                            }
+                        }
+                    }
+                }
+                // when offline critera is satisfied the node is put offline
+                //and is removed from all connections
+                if (type.size() > 1 && added.size() >= 6){
+                    vertmap.get(s).setActive(false);
+                    removeConnections(s);
+                }
+            }
+        }
+
+
+    }
+
     /**
-     * prints all the inactive nodes
+     * prints all the inactive nodes in the graph
      */
     public void inActive(){
         ArrayList<String> node = new ArrayList<>();
-
+        System.out.println();
+        //checking all nodes in the map adding all inactive ones to the list
         for (Map.Entry<String, Vertex> entry : vertmap.entrySet()){
             String k = entry.getKey();
-
             if (!vertmap.get(k).getActive()){
-                System.out.println("Node: " +k+ " is inactive");
+                //System.out.println("Node: " +k+ " is inactive");
+                node.add(k);
             }
+        }
+        if (node.isEmpty()){
+            System.out.println("There are no inactive nodes on this graph");
+        }
+        else{
+            System.out.println("There are " +node.size()+ " inactive nodes: " +node);
         }
     }
 
@@ -550,6 +635,7 @@ public class Graph{
                     green.add(vertmap.get(node).getFirewall_virus().get(i));
                 }
             }
+
             red = FDateSort(red, low, red.size() -1);
             blue = FDateSort(blue, low, blue.size() -1);
             black = FDateSort(black, low, black.size() -1);
@@ -629,15 +715,17 @@ public class Graph{
                 size.add(green);
             }
 
-            for (int i = 0; i < size.size(); i++){
-                int most = i;
-                for (int j = i; j < size.size(); j++){
+            while (!size.isEmpty()){
+                int most = 0;
+                for (int j = 0; j < size.size(); j++){
                     if (size.get(most).size() < size.get(j).size()){
                         most = j;
                     }
                 }
                 sorted.addAll(size.get(most));
+                size.remove(most);
             }
+
             vertmap.get(node).setVirus(sorted);
         }
 
@@ -721,20 +809,26 @@ public class Graph{
         return type;
     }
 
+    /**
+     * Finds all alerts on each node, saving them to the alerts variable
+     * in the corresponding node
+     */
     public void Alerts() {
+
 
         for (Map.Entry<String, Vertex> entry : vertmap.entrySet()) {
             String k = entry.getKey();
-            Set<String> type = new HashSet<>();
             long time = 0;
 
+            //When the node has been infected with 2 or more virus'
+            //checks if 2 infections they are the same type and within 2 min
             if (vertmap.get(k).getVirus().size() >= 2) {
                 for (int j = 0; j < vertmap.get(k).getVirus().size(); j++) {
                     if (j == 0) {
                         continue;
                     }
                     else {
-                        time += TimeBetween(vertmap.get(k).getVirus().get(j).getDate(), vertmap.get(k).getVirus().get(j - 1).getDate());
+                        time = TimeBetween(vertmap.get(k).getVirus().get(j).getDate(), vertmap.get(k).getVirus().get(j - 1).getDate());
                     }
 
                     String type1 = vertmap.get(k).getVirus().get(j).getType();
@@ -745,8 +839,40 @@ public class Graph{
                     }
                 }
             }
-
         }
     }
+
+    /**
+     * Method used to create and output the adjacency graph
+     * this done in Graph.java for ease of access to the graph data
+     */
+    public int[][] CreateAdjacency(){
+        Map<String, Integer> adjVal = new HashMap<>();
+        int count = 0;
+
+        //setting the matrix size using the number of nodes in the graph
+        GraphAdjacencyMatrix matrix = new GraphAdjacencyMatrix(vertmap.size());
+
+        //linking the node to its number order in the graph
+        for (Map.Entry<String, ArrayList<Vertex>> entry : map.entrySet()){
+            String k = entry.getKey();
+            adjVal.putIfAbsent(k, count);
+            System.out.println(count+ " = " +k);
+            count++;
+        }
+
+        //using each node and its number order to add the edges to the matrix
+        for (Map.Entry<String, ArrayList<Vertex>> entry : map.entrySet()){
+            String k = entry.getKey();
+            for (Vertex v : map.get(k)){
+                if (vertmap.get(k).getActive()){
+                    matrix.addEdge(adjVal.get(k), adjVal.get(v.getSrc()));
+                }
+            }
+        }
+        matrix.printMatrix();
+        return matrix.getMatrix();
+    }
+
 
 }
